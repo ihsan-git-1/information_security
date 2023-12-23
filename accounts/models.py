@@ -12,7 +12,6 @@ from accounts.utils import (
         remove_existing_file,
         unique_security_token,
         unique_uid,
-        send_mail
     )
 
 from datetime import datetime, timedelta
@@ -41,25 +40,6 @@ class User(db.Model, UserMixin):
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     profile = db.Relationship('Profile', backref='user', cascade='save-update, merge, delete')
-
-
-    # def send_confirmation(self):
-    #     """
-    #     A method for sending an email for account confirmation.
-    #     """
-    #     self.security_token = unique_security_token()
-    #     self.is_send = datetime.now()
-    #     db.session.commit()
-    #     subject = "Verify Your Account."
-    #     verification_link = url_for('accounts.confirm_account', token=self.security_token)
-    #     content = f"""
-    #     Hi, {self.username}
-    #     Your Registration is completed. 
-
-    #     Please click the following link to confirm your account.
-    #     {verification_link}
-    #     """
-    #     return send_mail(subject, self.email, content)
 
     @classmethod
     def get_user_by_username(cls, username):

@@ -35,8 +35,6 @@
           {{ render_nav_item('accounts.index', 'Home') }}
           {% if current_user.is_authenticated %}
           {{ render_nav_item('accounts.profile', 'Profile') }}
-          {{ render_nav_item('accounts.change_email', 'Reset Email') }}
-          {{ render_nav_item('accounts.change_password', 'Change Password') }}
           {% endif %}
         </ul>
         <ul class="navbar-nav ms-auto my-2">

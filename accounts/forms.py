@@ -51,27 +51,21 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember me', validators=[DataRequired()])
     submit = SubmitField('Continue')
 
+class EditUserProfileForm(FlaskForm):
 
-class ForgotPasswordForm(FlaskForm):
-
-    email = EmailField('Email Address', 
-        validators=[DataRequired(), Length(8, 150), Email()]
+    username = StringField('Username', 
+        validators=[DataRequired(), Length(1, 30), StrongUsername()]
     )
-    remember = BooleanField('I agree & accept all terms of services.', validators=[DataRequired()])
-    submit = SubmitField('Send Reset Link')
-
-
-class ResetPasswordForm(FlaskForm):
-
-    password = PasswordField('Password', 
-        validators=[DataRequired(), Length(8, 20), StrongPassword()]
+    first_name = StringField('First Name', validators=[DataRequired(), Length(3, 25), StrongNames()])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(3, 25), StrongNames()])
+    profile_image = FileField('Profile Image', 
+        validators=[
+            FileAllowed(['jpg', 'jpeg', 'png', 'svg'], 'Please upload images only.'),
+            FileSize(max_size=2000000, message='Profile image size should not greater than 2MB.')
+        ]
     )
-    confirm_password = PasswordField('Confirm Password', 
-        validators=[DataRequired(), Length(8, 20), StrongPassword()]
-    )
-    remember = BooleanField('Remember me', validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
+    about = TextAreaField('About')
+    submit = SubmitField('Save Profile')
 
 class ChangePasswordForm(FlaskForm):
 
@@ -89,20 +83,3 @@ class ChangeEmailForm(FlaskForm):
     )
     remember = BooleanField('I agree & accept all terms of services.', validators=[DataRequired()])
     submit = SubmitField('Send Confirmation Mail')
-
-
-class EditUserProfileForm(FlaskForm):
-
-    username = StringField('Username', 
-        validators=[DataRequired(), Length(1, 30), StrongUsername()]
-    )
-    first_name = StringField('First Name', validators=[DataRequired(), Length(3, 25), StrongNames()])
-    last_name = StringField('Last Name', validators=[DataRequired(), Length(3, 25), StrongNames()])
-    profile_image = FileField('Profile Image', 
-        validators=[
-            FileAllowed(['jpg', 'jpeg', 'png', 'svg'], 'Please upload images only.'),
-            FileSize(max_size=2000000, message='Profile image size should not greater than 2MB.')
-        ]
-    )
-    about = TextAreaField('About')
-    submit = SubmitField('Save Profile')
