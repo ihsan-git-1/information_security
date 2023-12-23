@@ -2,10 +2,6 @@
 
 ### A Simple Authentication System Project with basic user functionality in Python Flask with SQLAlchemy.
 
-## 👩‍💻 Live Demo
-
-### 🔗https://anuraag01.pythonanywhere.com/home
-
 ## Project features & functionality
 
 - Create account
@@ -29,46 +25,6 @@
 8. [Jinja2](https://jinja.palletsprojects.com/)
 
 ## Some Screenshots of our Project
-
-### Register Page
-
-![Register](https://github.com/anuraagnagar/flask-user-authentication/blob/main/screenshots/register_page.jpg)
-
-### Login Page
-
-![Login](https://github.com/anuraagnagar/flask-user-authentication/blob/main/screenshots/login_page.jpg)
-
-### Forgot Password Page
-
-![Forgot Password](https://github.com/anuraagnagar/flask-user-authentication/blob/main/screenshots/forgot_password_page.jpg)
-
-### Reset Password Page
-
-![Reset Password](https://github.com/anuraagnagar/flask-user-authentication/blob/main/screenshots/reset_password_page.jpg)
-
-### Reset Email Page
-
-![Reset Email](https://github.com/anuraagnagar/flask-user-authentication/blob/main/screenshots/reset_email_page.jpg)
-
-### Home Page
-
-![Home](https://github.com/anuraagnagar/flask-user-authentication/blob/main/screenshots/home_page.jpg)
-
-### Edit Profile Page
-
-![Edit Profile](https://github.com/anuraagnagar/flask-user-authentication/blob/main/screenshots/profile_page.jpg)
-
-### Change Password Page
-
-![Change Password](https://github.com/anuraagnagar/flask-user-authentication/blob/main/screenshots/change_password_page.jpg)
-
-## Set up & Run locally.
-
-### 1. Clone the git repository.
-
-```bash
-git clone https://github.com/anuraagnagar/flask-user-authentication.git
-```
 
 ### 2. Go to the project directory.
 
@@ -129,12 +85,3 @@ flask run
 ```
 
 To access this application open `http://localhost:5000` in your web browser.
-
-## Contributing
-
-Contributions are welcome! If you find a bug or want to add a new feature, please open an issue or submit a pull request.
-For more information checkout ![CONTRIBUTING.md](https://github.com/anuraagnagar/flask-user-authentication/blob/main/CONTRIBUTING.md)
-
-## Licence
-
-By contributing to this project, you agree that your contributions will be licensed under the ![MIT License](https://github.com/anuraagnagar/flask-user-authentication/blob/main/LICENSE).
