@@ -10,19 +10,15 @@ from flask_login import (
 from accounts.extensions import database as db
 from accounts.models import User, Profile
 from accounts.forms import (
+        ChangeEmailForm,
+        ChangePasswordForm,
         RegisterForm, 
         LoginForm, 
-        ForgotPasswordForm,
-        ResetPasswordForm,
-        ChangePasswordForm,
-        ChangeEmailForm,
         EditUserProfileForm
     )
 from accounts.utils import (
         unique_security_token,
         get_unique_filename,
-        send_reset_password,
-        send_reset_email
     )
 
 from datetime import datetime, timedelta
@@ -122,90 +118,37 @@ def login():
 
     return render_template('login.html', form=form)
 
-
-@accounts.route('/account/confirm?token=<string:token>', methods=['GET', 'POST'], strict_slashes=False)
-def confirm_account(token=None):
-    auth_user = User.query.filter_by(security_token=token).first_or_404()
-
-    if auth_user and not auth_user.is_token_expire():
-        if request.method == "POST":
-            try:
-                auth_user.active = True
-                auth_user.security_token = None
-                db.session.commit()
-                login_user(auth_user, remember=True, duration=timedelta(days=15))
-                flash(f"Welcome {auth_user.username}, You're registered successfully.", 'success')
-                return redirect(url_for('accounts.index'))
-            except Exception as e:
-                flash("Something went wrong.", 'error')
-                return redirect(url_for('accounts.login'))
-
-        return render_template('confirm_account.html', token=token)
-
-    return abort(404)
-
-
-@accounts.route('/logout', strict_slashes=False)
+@accounts.route('/change/email', methods=['GET', 'POST'], strict_slashes=False)
 @login_required
-def logout():
-    logout_user()
-    flash("You're logout successfully.", 'success')
-    return redirect(url_for('accounts.login'))
-
-
-@accounts.route('/forgot/password', methods=['GET', 'POST'], strict_slashes=False)
-def forgot_password():
-    form = ForgotPasswordForm()
+def change_email():
+    form = ChangeEmailForm()
 
     if form.validate_on_submit():
         email = form.data.get('email')
-        user = User.get_user_by_email(email=email)
 
-        if user:
+        user = User.query.get_or_404(current_user.id)
+
+        if current_user.username == 'test_user':
+            flash("Guest user limited to read-only access.", 'error')
+        elif email == user.email:
+            flash("Email is already verified with your account.", 'warning')  
+        elif email in [u.email for u in User.query.all() if email != user.email]:
+            flash("Email address is already registered with us.", 'warning')  
+        else:
             try:
+                user.change_email = email
                 user.security_token = unique_security_token()
                 user.is_send = datetime.now()
                 db.session.commit()
-                send_reset_password(user)
-                flash("A reset password link sent to your email. Please check.", 'success')
-                return redirect(url_for('accounts.login'))
+                flash("A reset email link sent to your new email address. Please verify.", 'success')
+                return redirect(url_for('accounts.index'))
             except Exception as e:
-                flash("Something went wrong", 'error')
-                return redirect(url_for('accounts.forgot_password'))
+                flash("Something went wrong.", 'error')
+                return redirect(url_for('accounts.change_email'))
+            
+        return redirect(url_for('accounts.change_email'))
 
-        flash("Email address is not registered with us.", 'error')
-        return redirect(url_for('accounts.forgot_password'))
-
-    return render_template('forget_password.html', form=form)
-
-
-@accounts.route('/password/reset/token?<string:token>', methods=['GET', 'POST'], strict_slashes=False)
-def reset_password(token=None):
-    user = User.query.filter_by(security_token=token).first_or_404()
-
-    if user and not user.is_token_expire():
-        form = ResetPasswordForm()
-
-        if form.validate_on_submit():
-            password = form.data.get('password')
-            confirm_password = form.data.get('confirm_password')
-
-            if not (password == confirm_password):
-                flash("Your new password field's not match.", 'error')
-            elif not re.match(r"(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", password):
-                flash("Please choose strong password. It contains at least one alphabet, number, and one special character.", 'warning')
-            else:
-                user.set_password(password)
-                user.security_token = None
-                db.session.commit()
-                flash("Your password is changed successfully. Please login.", 'success')
-                return redirect(url_for('accounts.login'))
-
-            return redirect(url_for('accounts.reset_password', token=token))
-
-        return render_template('reset_password.html', form=form, token=token)
-
-    return abort(404)
+    return render_template('change_email.html', form=form)
 
 
 @accounts.route('/change/password', methods=['GET', 'POST'], strict_slashes=False)
@@ -237,61 +180,12 @@ def change_password():
         return redirect(url_for('accounts.change_password'))
     return render_template('change_password.html', form=form)
 
-
-@accounts.route('/change/email', methods=['GET', 'POST'], strict_slashes=False)
+@accounts.route('/logout', strict_slashes=False)
 @login_required
-def change_email():
-    form = ChangeEmailForm()
-
-    if form.validate_on_submit():
-        email = form.data.get('email')
-
-        user = User.query.get_or_404(current_user.id)
-
-        if current_user.username == 'test_user':
-            flash("Guest user limited to read-only access.", 'error')
-        elif email == user.email:
-            flash("Email is already verified with your account.", 'warning')  
-        elif email in [u.email for u in User.query.all() if email != user.email]:
-            flash("Email address is already registered with us.", 'warning')  
-        else:
-            try:
-                user.change_email = email
-                user.security_token = unique_security_token()
-                user.is_send = datetime.now()
-                db.session.commit()
-                send_reset_email(user=user)
-                flash("A reset email link sent to your new email address. Please verify.", 'success')
-                return redirect(url_for('accounts.index'))
-            except Exception as e:
-                flash("Something went wrong.", 'error')
-                return redirect(url_for('accounts.change_email'))
-            
-        return redirect(url_for('accounts.change_email'))
-
-    return render_template('change_email.html', form=form)
-
-
-@accounts.route('/account/email/confirm?token=<string:token>', methods=['GET', 'POST'], strict_slashes=False)
-def confirm_email(token=None):
-    user = User.query.filter_by(security_token=token).first_or_404()
-
-    if user and not user.is_token_expire():
-        if request.method == "POST":
-            try:
-                user.email = user.change_email
-                user.change_email = None
-                user.security_token = None
-                db.session.commit()
-                flash(f"Your email address updated successfully.", 'success')
-                return redirect(url_for('accounts.index'))
-            except Exception as e:
-                flash("Something went wrong", 'error')
-                return redirect(url_for('accounts.index'))
-
-        return render_template('confirm_email.html', token=token)
-
-    return abort(404)
+def logout():
+    logout_user()
+    flash("You're logout successfully.", 'success')
+    return redirect(url_for('accounts.login'))
 
 
 @accounts.route('/', strict_slashes=False)
