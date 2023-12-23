@@ -2,17 +2,6 @@
 
 ### A Simple Authentication System Project with basic user functionality in Python Flask with SQLAlchemy.
 
-## Project features & functionality
-
-- Create account
-- Log In via (Username & Email address)
-- Logout
-- Account activation via email
-- Reset password via reset link
-- Reset new email via confirmation link
-- Update profile & add image
-- Change password after login
-
 ## Framework & Library
 
 1. [Flask](https://flask.palletsprojects.com/)
