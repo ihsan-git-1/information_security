@@ -52,6 +52,12 @@ pip install -r requirements.txt
 
 ### 6. Migrate/Create a database.
 
+Create Docker Container (Use VPN).
+```bash
+docker compose build
+docker compose up
+```
+
 Initialize the database migration directory.
 ```bash
 flask db init
