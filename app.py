@@ -6,7 +6,9 @@ from flask import Flask as FlaskAuth
 from pathlib import Path
 from sqlalchemy.ext.declarative import declarative_base
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import MetaData, create_engine
+
+from accounts.methods.choose_user_type import choose_client_type
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,46 +18,33 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "accounts", "static", "assets")
 
 UPLOAD_FOLDER = os.path.join(MEDIA_ROOT, "profile")
 
-DataBaseDeclare = declarative_base()
+metadata = MetaData()
 
-def create_app():
+host = "127.0.0.1"
+port = 12345
 
-    # Create a base class for declarative class definitions
-    DATABASE_URL = os.getenv('DATABASE_URI', None)
-    engine = create_engine(DATABASE_URL, echo=True)
-    DataBaseDeclare.metadata.create_all(engine)
+choice = input("Do you want server(1) or client(2): ")
 
-    choose_client_or_server()
+if choice == "1":
+    # Create a socket server
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((host, port))
 
-def choose_client_or_server():
-    host = "127.0.0.1"
-    port = 12345
-    choice = input("Do you want server(1) or client(2): ")
-    if choice == "1":
-        # Create a socket server
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind((host, port))
-        server.listen()
-        print(f"Server listening on {host}:{port}")
-        serverApp, _ = server.accept()
+    # Listen for connections
+    server.listen(10)
 
-    elif choice == "2":
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        clientSocket = client.connect((host, port))
-    else:
-        exit()
+    print(f"Server listening on {host}:{port}")
+    client, _ = server.accept()
 
-    threading.Thread(target=choose_client_type, args=(clientSocket,)).start()  
+elif choice == "2":
+    clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    clientSocket = clientSocket.connect((host, port))
+
+    choose_client_type(clientSocket)
+
+else:
+    exit()
 
 
-def choose_client_type(clientSocket):
-    choice = input("Do you want student(1) or teacher(2): ")
 
-    if choice == "1":
-        clientSocket.sendall("Hi Student!")
 
-    elif choice == "2":
-        clientSocket.sendall("Hi Teacher!")
-
-    else:
-        exit()

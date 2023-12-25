@@ -1,3 +1,4 @@
+from sqlalchemy import create_engine
 from werkzeug.security import (
         check_password_hash,
         generate_password_hash
@@ -15,7 +16,11 @@ from accounts.utils import (
 from datetime import datetime, timedelta
 import os
 
-class User(DataBaseDeclare):
+
+DATABASE_URL = os.getenv('DATABASE_URI', None)
+
+engine = create_engine(DATABASE_URL, echo=True)
+class User(autoload_with=engine):
     """
     A Base User model class.
     """
