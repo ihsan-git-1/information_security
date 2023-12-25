@@ -1,3 +1,6 @@
+import base64
+import hashlib
+import random
 from werkzeug.utils import secure_filename
 from flask import render_template, redirect, url_for
 from flask_mail import Message
@@ -22,3 +25,19 @@ def get_unique_filename(filename=None):
 def remove_existing_file(path=None):
     if os.path.isfile(path=path):
         os.remove(path)
+
+
+def convert_string_to_key(input_string):
+  # Create a SHA-256 hash object
+    hash_object = hashlib.sha256()
+
+    # Update the hash object with the bytes of the input string
+    hash_object.update(input_string.encode())
+
+    # Get the digest of the hash object
+    digest = hash_object.digest()
+
+    # Base64 encode the digest and make it URL-safe
+    key = base64.urlsafe_b64encode(digest)
+
+    return key
