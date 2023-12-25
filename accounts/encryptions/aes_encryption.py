@@ -1,6 +1,8 @@
 from cryptography.fernet import Fernet
 
-class AesEncryption ():
+from accounts.encryptions.encryption import EncryptionClass
+
+class AesEncryption (EncryptionClass) :
 
     secret_Key = ""
     
@@ -8,8 +10,9 @@ class AesEncryption ():
         self.secret_Key = key
         self.cipher_suite = Fernet(self.secret_Key)
 
-    def aes_encrypt_message(message, self):
+
+    def encrypt(message, self):
         return self.cipher_suite.encrypt(message.encode())
 
-    def aes_decrypt_message(encrypted_message, self):
+    def decrypt(encrypted_message, self):
         return self.cipher_suite.decrypt(encrypted_message).decode()
