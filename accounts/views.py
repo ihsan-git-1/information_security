@@ -33,57 +33,28 @@ within our application.
 accounts = Blueprint('accounts', __name__, template_folder='templates')
 
 
-@accounts.route('/login_as_guest', methods=['GET', 'POST'], strict_slashes=False)
-def login_guest_user():
-
-    if request.method == 'POST':
-        username = request.form.get('username')
-
-        if username == 'test_user':
-            test_user = User.get_user_by_username(username=username)
-
-            if test_user:
-                login_user(test_user, remember=True, duration=timedelta(days=1))
-                flash("You are logged in as a Guest User.", 'success')
-                return redirect(url_for('accounts.index'))
-
-        flash("Something went wront.", 'error')
-        return redirect(url_for('accounts.login'))
-
-    return abort(404)
-
-
 @accounts.route('/register', methods=['GET', 'POST'], strict_slashes=False)
 def register():
     form = RegisterForm()
 
     if current_user.is_authenticated:
         return redirect(url_for('accounts.index'))
-
     if form.validate_on_submit():
         username = form.data.get('username')
-        first_name = form.data.get('first_name')
-        last_name = form.data.get('last_name')
-        email = form.data.get('email')
         password = form.data.get('password')
 
         try:
             user = User(
                 username=username,
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
                 password=password
             )
             user.set_password(password)
             user.save()
-            user.send_confirmation()
-            flash("A confirmation link sent to your email. Please verify your account.", 'info')
             return redirect(url_for('accounts.login'))
         except Exception as e:
             flash("Something went wrong", 'error')
             return redirect(url_for('accounts.register'))
-
+        
     return render_template('register.html', form=form)
 
 
@@ -98,7 +69,7 @@ def login():
         username = form.data.get('username')
         password = form.data.get('password')
 
-        user = User.get_user_by_username(username) or User.get_user_by_email(username)
+        user = User.get_user_by_username(username)
 
         if not user:
             flash("User account doesn't exists.", 'error')
