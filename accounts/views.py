@@ -76,11 +76,6 @@ def login():
         elif not user.check_password(password):
             flash("Your password is incorrect. Please try again.", 'error')
         else:
-            if not user.is_active():
-                user.send_confirmation()
-                flash("Your account is not activate.", 'error')
-                return redirect(url_for('accounts.login'))
-
             login_user(user, remember=True, duration=timedelta(days=15))
             flash("You are logged in successfully.", 'success')
             return redirect(url_for('accounts.index'))
@@ -88,68 +83,6 @@ def login():
         return redirect(url_for('accounts.login'))
 
     return render_template('login.html', form=form)
-
-@accounts.route('/change/email', methods=['GET', 'POST'], strict_slashes=False)
-@login_required
-def change_email():
-    form = ChangeEmailForm()
-
-    if form.validate_on_submit():
-        email = form.data.get('email')
-
-        user = User.query.get_or_404(current_user.id)
-
-        if current_user.username == 'test_user':
-            flash("Guest user limited to read-only access.", 'error')
-        elif email == user.email:
-            flash("Email is already verified with your account.", 'warning')  
-        elif email in [u.email for u in User.query.all() if email != user.email]:
-            flash("Email address is already registered with us.", 'warning')  
-        else:
-            try:
-                user.change_email = email
-                user.security_token = unique_security_token()
-                user.is_send = datetime.now()
-                db.session.commit()
-                flash("A reset email link sent to your new email address. Please verify.", 'success')
-                return redirect(url_for('accounts.index'))
-            except Exception as e:
-                flash("Something went wrong.", 'error')
-                return redirect(url_for('accounts.change_email'))
-            
-        return redirect(url_for('accounts.change_email'))
-
-    return render_template('change_email.html', form=form)
-
-
-@accounts.route('/change/password', methods=['GET', 'POST'], strict_slashes=False)
-@login_required
-def change_password():
-    form = ChangePasswordForm()
-
-    if form.validate_on_submit():
-        old_password = form.data.get('old_password')
-        new_password = form.data.get('new_password')
-        confirm_password = form.data.get('confirm_password')
-
-        user = User.query.get_or_404(current_user.id)
-        
-        if current_user.username == 'test_user':
-            flash("Test user limited to read-only access.", 'error')
-        elif not user.check_password(old_password):
-            flash("Your old password is incorrect.", 'error')
-        elif not (new_password == confirm_password):
-            flash("Your new password field's not match.", 'error')
-        elif not re.match(r"(?=^.{8,}$)(?=.*\d)(?=.*[!@#$%^&*]+)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$", new_password):
-            flash("Please choose strong password. It contains at least one alphabet, number, and one special character.", 'warning')
-        else:
-            user.set_password(new_password)
-            db.session.commit()
-            flash("Your password changed successfully.", 'success')
-            return redirect(url_for('accounts.index'))
-
-        return redirect(url_for('accounts.change_password'))
-    return render_template('change_password.html', form=form)
 
 @accounts.route('/logout', strict_slashes=False)
 @login_required
