@@ -23,23 +23,17 @@
                 </div>
                 <div class="col-md-6">
                     <div class="row my-3">
-                        <div class="mb-3">
-                            <h2 class="mb-1">{{ current_user.first_name }} {{ current_user.last_name }}</h2>
-                            <p>@{{ current_user.username }}</p>
-                        </div>
+                        <h2 class="mb-1">{{ current_user.username }}</h2>
                         <h6 class="text-muted mb-4">{{ profile.bio }}</h6>
                         <div class="row">
-                            <label class="fw-bold">First Name</label>
-                            <p>{{ current_user.first_name }}</p>
+                            <label class="fw-bold">Phone Number</label>
+                            <p>{{ profile.phone_number }}</p>
                         </div>
                         <div class="row">
-                            <label class="fw-bold">Last Name</label>
-                            <p>{{ current_user.last_name }}</p>
+                            <label class="fw-bold">City</label>
+                            <p>{{ profile.city }}</p>
                         </div>
-                        <div class="row">
-                            <label class="fw-bold">Email Address</label>
-                            <p>{{ current_user.email }}</p>
-                        </div>
+            
                     </div>
                     <div>
                         <a href="{{ url_for('accounts.profile') }}" type="submit" class="btn btn-primary"
