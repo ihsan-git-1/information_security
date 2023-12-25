@@ -26,16 +26,11 @@ class User(db.Model, UserMixin):
 
     id = db.Column(db.String(38), primary_key=True, default=unique_uid, unique=True, nullable=False)
     username = db.Column(db.String(30), unique=True, nullable=False)
-    first_name = db.Column(db.String(25), nullable=False)
-    last_name = db.Column(db.String(25), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(128), nullable=False)
 
     active = db.Column(db.Boolean, default=True, nullable=True)
     security_token = db.Column(db.String(138), default=unique_security_token)
     is_send = db.Column(db.DateTime, default=datetime.now)
-    change_email = db.Column(db.String(120), default="")
-
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
@@ -44,10 +39,6 @@ class User(db.Model, UserMixin):
     @classmethod
     def get_user_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
-
-    @classmethod
-    def get_user_by_email(cls, email):
-        return cls.query.filter_by(email=email).first()
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -88,6 +79,8 @@ class Profile(db.Model):
 
     id = db.Column(db.String(38), primary_key=True, default=unique_uid, unique=True, nullable=False)
     bio = db.Column(db.String(200), default='')
+    phone_number = db.Column(db.String(20), default='')
+    city = db.Column(db.String(200), default='')
     avator = db.Column(db.String(250), default='')
 
     created_at = db.Column(db.DateTime, default=datetime.now)

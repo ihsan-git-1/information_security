@@ -17,7 +17,7 @@
                             </div>
                             {{ render_messages() }}
                             {{ form.csrf_token() }}
-                            {{ render_field(form.username, placeholder="Enter username or email", autofocus="true") }}
+                            {{ render_field(form.username, placeholder="Enter username", autofocus="true") }}
                             {{ render_field(form.password, placeholder="Enter your password") }}
                             {{ render_field(form.remember, checked="true") }}
                             {{ render_field(form.submit, class="w-100 mb-3") }}

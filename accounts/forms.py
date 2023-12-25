@@ -30,12 +30,6 @@ class RegisterForm(FlaskForm):
         validators=[DataRequired(), Length(1, 30), StrongUsername(),
             Unique(User, User.username, message='Username already exists choose another.')]
     )   
-    first_name = StringField('First Name', validators=[DataRequired(), Length(3, 20), StrongNames()])
-    last_name = StringField('Last Name', validators=[DataRequired(), Length(3, 20), StrongNames()])
-    email = EmailField('Email Address', 
-        validators=[DataRequired(), Length(8, 150), Email(),
-            Unique(User, User.email, message='Email Address already registered with us.')]
-    )
     password = PasswordField('Password', 
         validators=[DataRequired(), Length(8, 20), StrongPassword()]
     )
@@ -45,7 +39,7 @@ class RegisterForm(FlaskForm):
 
 class LoginForm(FlaskForm):
 
-    username = StringField('Username or Email Address', validators=[DataRequired(), Length(5, 150)])
+    username = StringField('Username', validators=[DataRequired(), Length(5, 150)])
     password = PasswordField('Password', validators=[DataRequired(), Length(8, 20)])
     # recaptcha = RecaptchaField()
     remember = BooleanField('Remember me', validators=[DataRequired()])
