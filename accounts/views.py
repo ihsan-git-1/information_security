@@ -9,7 +9,7 @@ from flask_login import (
 from accounts.encryptions.aes_encryption import AesEncryption
 
 from accounts.extensions import database as db
-from accounts.extensions import encryptionClass
+from accounts.extensions import encryptionClass as ec
 from accounts.models import User, Profile
 from accounts.forms import (
         RegisterForm, 
@@ -17,6 +17,7 @@ from accounts.forms import (
         EditUserProfileForm
     )
 from accounts.utils import (
+        convert_string_to_key,
         unique_security_token,
         get_unique_filename,
     )
@@ -32,13 +33,10 @@ within our application.
 """
 accounts = Blueprint('accounts', __name__, template_folder='templates')
 
-# function is called before each request
-@accounts.before_request
-def before_request():
-    print(accounts.endpoint)
-    if accounts.endpoint in ['home', '' , 'profile']:
-        print("hi I am In ")
-        encryptionClass = AesEncryption()
+# # function is called before each request
+# @accounts.before_request
+# def before_request():
+        
 
 
 @accounts.route('/register', methods=['GET', 'POST'], strict_slashes=False)
@@ -126,6 +124,9 @@ def profile():
         if username in [user.username for user in User.query.all() if username != current_user.username]:
             flash("Username already exists. Choose another.", 'error')
         else:
+            # encrypt the data 
+            key= convert_string_to_key(user.username)
+            ec = AesEncryption(key= key)
             user.username = username
             profile.bio = about
             profile.phone_number = phone_number
