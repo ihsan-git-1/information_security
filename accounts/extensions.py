@@ -5,6 +5,9 @@ from flask_wtf import CSRFProtect
 from flask_mail import Mail
 from flask_migrate import Migrate
 
+from accounts.encryptions.aes_encryption import AesEncryption
+from accounts.encryptions.encryption import EncryptionClass
+
 
 # A bootstrap5 class for styling client side. 
 bootstrap = Bootstrap5()
@@ -22,4 +25,7 @@ login_manager = LoginManager()
 mail = Mail()
 
 # flask_migrate - Migration for database
-migrate = Migrate(command='db') 
+migrate = Migrate(command='db')
+
+# encryption class instance
+encryptionClass = EncryptionClass()

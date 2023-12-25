@@ -6,12 +6,12 @@ from flask_login import (
         login_user,
         logout_user
     )
+from accounts.encryptions.aes_encryption import AesEncryption
 
 from accounts.extensions import database as db
+from accounts.extensions import encryptionClass
 from accounts.models import User, Profile
 from accounts.forms import (
-        ChangeEmailForm,
-        ChangePasswordForm,
         RegisterForm, 
         LoginForm, 
         EditUserProfileForm
@@ -31,6 +31,14 @@ This accounts blueprint defines routes and templates related to user management
 within our application.
 """
 accounts = Blueprint('accounts', __name__, template_folder='templates')
+
+# function is called before each request
+@accounts.before_request
+def before_request():
+    print(accounts.endpoint)
+    if accounts.endpoint in ['home', '' , 'profile']:
+        print("hi I am In ")
+        encryptionClass = AesEncryption()
 
 
 @accounts.route('/register', methods=['GET', 'POST'], strict_slashes=False)
