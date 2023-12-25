@@ -16,6 +16,7 @@ from wtforms.validators import (
     Email
 )
 from accounts.validators import (
+    CorrectPhoneNumber,
     Unique,
     StrongNames,
     StrongUsername,
@@ -50,8 +51,8 @@ class EditUserProfileForm(FlaskForm):
     username = StringField('Username', 
         validators=[DataRequired(), Length(1, 30), StrongUsername()]
     )
-    first_name = StringField('First Name', validators=[DataRequired(), Length(3, 25), StrongNames()])
-    last_name = StringField('Last Name', validators=[DataRequired(), Length(3, 25), StrongNames()])
+    phone_number = StringField('Phone Number', validators=[DataRequired(), Length(3, 15),CorrectPhoneNumber()])
+    city = StringField('City', validators=[DataRequired(), Length(3, 25), StrongNames()])
     profile_image = FileField('Profile Image', 
         validators=[
             FileAllowed(['jpg', 'jpeg', 'png', 'svg'], 'Please upload images only.'),

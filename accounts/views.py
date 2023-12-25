@@ -110,20 +110,18 @@ def profile():
 
     if form.validate_on_submit():
         username = form.data.get('username')
-        first_name = form.data.get('first_name')
-        last_name = form.data.get('last_name')
+        phone_number = form.data.get('phone_number')
+        city = form.data.get('city')
         profile_image = form.data.get('profile_image')
         about = form.data.get('about')
 
-        if current_user.username == 'test_user':
-            flash("Guest user limited to read-only access.", 'error')
-        elif username in [user.username for user in User.query.all() if username != current_user.username]:
+        if username in [user.username for user in User.query.all() if username != current_user.username]:
             flash("Username already exists. Choose another.", 'error')
         else:
             user.username = username
-            user.first_name = first_name
-            user.last_name = last_name
             profile.bio = about
+            profile.phone_number = phone_number
+            profile.city = city
 
             if profile_image and getattr(profile_image, "filename"):
                 profile.set_avator(profile_image)
