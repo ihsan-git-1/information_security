@@ -1,11 +1,9 @@
-from flask import url_for
-from flask_login.mixins import UserMixin
 from werkzeug.security import (
         check_password_hash,
         generate_password_hash
     )
 
-from accounts import UPLOAD_FOLDER
+from accounts import UPLOAD_FOLDER, DataBaseDeclare
 from accounts.extensions import database as db
 from accounts.utils import (
         get_unique_filename,
@@ -17,7 +15,7 @@ from accounts.utils import (
 from datetime import datetime, timedelta
 import os
 
-class User(db.Model, UserMixin):
+class User(DataBaseDeclare):
     """
     A Base User model class.
     """
@@ -70,7 +68,7 @@ class User(db.Model, UserMixin):
         return '<User> {}'.format(self.email)
 
 
-class Profile(db.Model):
+class Profile(DataBaseDeclare):
     """
     A User profile model class.
     """

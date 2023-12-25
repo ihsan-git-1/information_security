@@ -1,10 +1,6 @@
 import base64
 import hashlib
-import random
 from werkzeug.utils import secure_filename
-from flask import render_template, redirect, url_for
-from flask_mail import Message
-from accounts.extensions import mail
 import uuid
 import secrets
 import os
