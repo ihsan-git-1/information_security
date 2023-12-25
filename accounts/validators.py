@@ -28,6 +28,17 @@ class StrongNames(object):
         if not re.match("^[a-zA-Z]+$", field.data):
             raise ValidationError(self.message)
 
+class CorrectPhoneNumber(object):
+
+    def __init__(self, message=None):
+        self.message = message
+        if not self.message:
+            self.message = "Enter Valid Phone Number."
+
+    def __call__(self, form, field):
+        regex = "^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$"
+        if not re.match(regex, field.data):
+            raise ValidationError(self.message)
 
 class StrongUsername(object):
 
