@@ -5,7 +5,6 @@ from app_sockets.client_module import client_send_message
 
 def choose_client_type():
     
-    client_send_message("Socket Test Wi Wi")
     choice = input("Do you want student(1) or teacher(2): ")
 
     if choice == "1":
