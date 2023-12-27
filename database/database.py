@@ -28,9 +28,9 @@ def add_user_db(username, city, phone_number, password, user_type):
         cursor.execute('INSERT INTO users (username, city, phone_number, password, user_type) VALUES (?, ?, ?, ?, ?)',
                        (username, city, phone_number, password, user_type))
         conn.commit()
-        print("User added successfully.")
+        return "User added successfully."
     except sqlite3.IntegrityError:
-        print("Error: Username must be unique. User not added.")
+        return "Error: Username must be unique. User not added."
     finally:
         conn.close()
 
