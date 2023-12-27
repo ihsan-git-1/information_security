@@ -1,6 +1,8 @@
 import json
 
 from database.database import add_user_db, edit_user_info_db, login_user_db
+from encryptions.aes_encryption import AesEncryption
+from utils import convert_string_to_key
 
 
 def handle_AppRouting(jsonString):
@@ -50,10 +52,16 @@ def login_route(parameters):
 
 
 def edit_route(parameters):
+    aes = AesEncryption(convert_string_to_key(parameters["username"]))
+
+    city = aes.decrypt(parameters["city"])
+    phone_number = aes.decrypt(parameters["phone_number"])
+
     dbResponse = edit_user_info_db(
         parameters["username"],
-        parameters["city"],
-        parameters["phone_number"], 
+        city,
+        phone_number, 
     )
+    
     return dbResponse
 
