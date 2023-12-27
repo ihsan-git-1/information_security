@@ -9,13 +9,13 @@ def choose_client_type(clientSocket):
     choice = input("Do you want student(1) or teacher(2): ")
 
     if choice == "1":
+        print("Hi Student!")
         auth_view(UserEnum.STUDENT)
-        print(b'Hello')
 
     elif choice == "2":
         # add teacher function here 
-        auth_view(UserEnum.TEACHER)
         print("Hi Teacher!")
+        auth_view(UserEnum.TEACHER)
 
     else:
         exit()
