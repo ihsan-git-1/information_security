@@ -1,19 +1,18 @@
 
 from app_enum import UserEnum
 from methods.auth import auth_view
+from app_sockets.client_module import client_send_message
 
-
-
-def choose_client_type(clientSocket):
+def choose_client_type():
     
+    client_send_message("Socket Test Wi Wi")
     choice = input("Do you want student(1) or teacher(2): ")
-    clientSocket.send("Socket Test Wi Wi")
+
     if choice == "1":
         print("Hi Student!")
         auth_view(UserEnum.STUDENT)
-
+        
     elif choice == "2":
-        # add teacher function here 
         print("Hi Teacher!")
         auth_view(UserEnum.TEACHER)
 
