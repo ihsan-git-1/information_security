@@ -27,7 +27,7 @@ def sign_up_view(userType):
     phone_number = input("Enter phone number: ")
     password = input("Enter password: ")
 
-    # Send a "login" request
+    # Send a "sign up" request
     sign_up_request = {
         "route": "signup",
         "parameters": {
@@ -42,18 +42,17 @@ def sign_up_view(userType):
 
 
 def login_view():
-    login_attempts = 3  # Set the maximum number of login attempts
-    while login_attempts > 0:
-        print("Login \n")
-        username = input("Enter username: ")
-        password = input("Enter password: ")
-        user = login_user_db(username, password)
-        if user:
-            print(f"Login successful! Welcome, {user[1]}")
-            break
-        else:
-            login_attempts -= 1
-            print(f"Login failed. {login_attempts} attempts remaining.")
-    else:
-        print("Maximum login attempts reached. Exiting.")
+    print("Login \n")
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    # Send a "login" request
+    login_request = {
+        "route": "login",
+        "parameters": {
+            "username": username,
+            "password": password
+        }
+    }
+    client_send_json_message(login_request)
+
             
