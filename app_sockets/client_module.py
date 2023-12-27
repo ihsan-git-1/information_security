@@ -29,15 +29,16 @@ def client_send_json_message(fields):
     client_socket.sendall(message_with_length)
 
     # Wait for the server to respond
-    client_receive_response()
+    return client_receive_response()
 
 
 def client_receive_response():
   # Receive and print the response from the server
     response = client_socket.recv(1024)
-    print('********* Server **********')
+    print('\n********* Server **********')
     print(response.decode('utf-8'))
-    print('********* Server **********')
+    print('********* Server **********\n')
+    return response.decode('utf-8')
 
 
        

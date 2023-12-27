@@ -1,6 +1,6 @@
 import json
 
-from database.database import add_user_db, login_user_db
+from database.database import add_user_db, edit_user_info_db, login_user_db
 
 
 def handle_AppRouting(jsonString):
@@ -17,6 +17,9 @@ def handle_AppRouting(jsonString):
 
     elif route == "login":
         response = login_route(parameters)
+
+    elif route == "edit":
+        response = edit_route(parameters)
 
     else:
         response = "Invalid Route"
@@ -44,4 +47,13 @@ def login_route(parameters):
         return f"Login successful! Welcome, {user[1]}" 
     else:
         return "Login failed no account available"
+
+
+def edit_route(parameters):
+    dbResponse = edit_user_info_db(
+        parameters["username"],
+        parameters["city"],
+        parameters["phone_number"], 
+    )
+    return dbResponse
 

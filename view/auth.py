@@ -1,7 +1,7 @@
 
 import json
 from app_sockets.client_module import client_send_json_message
-from database.database import login_user_db
+from view.after_login import options_after_login_view
 
 
 def auth_view(userType):
@@ -38,6 +38,7 @@ def sign_up_view(userType):
             "user_type": userType.name
         }
     }
+
     client_send_json_message(sign_up_request)
 
 
@@ -53,6 +54,11 @@ def login_view():
             "password": password
         }
     }
-    client_send_json_message(login_request)
+    serverResponse = client_send_json_message(login_request)
+    
+    if(serverResponse == "Login failed no account available"):
+        return
+    
+    options_after_login_view(username)
 
             

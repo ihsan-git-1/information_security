@@ -41,3 +41,12 @@ def login_user_db(username, password):
     user = cursor.fetchone()
     conn.close()
     return user
+
+def edit_user_info_db(username, new_city, new_phone_number):
+    conn = sqlite3.connect('user_database.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET city=?, phone_number=? WHERE username=?',
+                   (new_city, new_phone_number, username))
+    conn.commit()
+    conn.close()
+    return "User information updated successfully." 
