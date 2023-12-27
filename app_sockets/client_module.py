@@ -17,13 +17,14 @@ def client_send_message(message):
     global client_socket
     # Send a message to the server
     client_socket.sendall(message.encode('utf-8'))
+    receive_response()
 
 def receive_response():
-    global client_socket
-
-    # Receive a response from the server
+    
+    # Receive and print the response from the server
     response = client_socket.recv(1024)
-    return response.decode('utf-8')
+    print('Received response:', response.decode('utf-8'))
+       
 
 def close_connection():
     global client_socket
