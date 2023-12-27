@@ -1,8 +1,11 @@
 
+from app_sockets.client_module import client_send_message
 from database.database import add_user_db, login_user_db
 
 
 def auth_view(userType):
+    client_send_message("SI am in auth")
+
     print("\n1. Add User")
     print("2. Login")
     choice = input("Enter your choice (1/2): ")
