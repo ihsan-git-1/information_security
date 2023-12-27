@@ -1,7 +1,6 @@
 
 from app_enum import UserEnum
 from view.auth import auth_view
-from app_sockets.client_module import client_send_message
 
 def choose_client_type():
     

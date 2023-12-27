@@ -4,22 +4,17 @@ from database.database import add_user_db
 
 
 def handle_AppRouting(jsonString):
-    print(jsonString)
-
-    json_decoder = json.JSONDecoder()
-    request = json_decoder.raw_decode(jsonString)
-
-    print("Request in router"+ request)
+    request = json.loads(jsonString)
 
     # Extract route and parameters from the request
     route = request["route"]
     parameters = request["parameters"]
 
-    print("App Route"+route)
-    print("App parameters"+parameters)
+    print("Activated Route: "+route)
 
     if route == "signup":
         response =  sign_up_route(parameters)
+        print(response)
 
     elif route == "login":
         response = {"message": f"Hello, {parameters.get('name', 'Guest')}!"}
