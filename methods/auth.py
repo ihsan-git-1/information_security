@@ -17,7 +17,7 @@ def auth_view(userType):
         print("Invalid choice. Please enter 1, 2")
 
 def sign_up_view(userType):
-    print("Add "+userType.name+ ": \n")
+    print("Add "+userType.name+ ":")
     username = input("Enter username: ")
     city = input("Enter city: ")
     phone_number = input("Enter phone number: ")
