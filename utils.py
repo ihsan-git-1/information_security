@@ -4,11 +4,6 @@ import uuid
 import secrets
 import os
 
-def unique_uid():
-    return str(uuid.uuid4())
-
-def unique_security_token():
-    return str(secrets.token_hex())
 
 def convert_string_to_key(input_string):
   # Create a SHA-256 hash object

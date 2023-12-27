@@ -1,7 +1,4 @@
 
-from abc import ABC, abstractmethod 
-
-
 class EncryptionClass():
 
     def encrypt(message, self):
