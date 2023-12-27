@@ -4,10 +4,11 @@ import threading
 from database.database import initalizeDataBaseTables
 
 from methods.choose_user_type import choose_client_type
+from methods.server_handling import receiving_messages
 
 
 host = "127.0.0.1"
-port = 12345
+port = 5001
 
 initalizeDataBaseTables()
 
@@ -19,10 +20,12 @@ if choice == "1":
     server.bind((host, port))
 
     # Listen for connections
-    server.listen(10)
+    server.listen()
 
     print(f"Server listening on {host}:{port}")
     client, _ = server.accept()
+
+    threading.Thread(target=receiving_messages, args=(client,)).start()
 
 elif choice == "2":
 
