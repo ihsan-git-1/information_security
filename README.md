@@ -41,42 +41,18 @@ On MacOS/Linux
 source venv/bin/activate
 ```
 
-To run this project locally, you will need to change `.env.example` file to `.env` on base directory 
-and set environment variables.
-
-### 5. Install the requirement packages.
+### 4. Install the requirement packages.
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 6. Migrate/Create a database.
-
-Create Docker Container (Use VPN).
-```bash
-docker compose build
-docker compose up
-```
-
-Initialize the database migration directory.
-```bash
-flask db init
-```
-
-Run migrate command.
-```bash
-flask db migrate -m "initial_migration"
-```
-
-Upgrade the database for latest migration.
-```bash
-flask db upgrade
-```
-
-### 7. Last to run the server.
+### 4. Run the app.
 
 ```bash
-flask run
+python3 app.py
 ```
+
+
 
 To access this application open `http://localhost:5000` in your web browser.
