@@ -1,12 +1,12 @@
 
+import json
 from app_sockets.client_module import client_send_message
 from database.database import add_user_db, login_user_db
 
 
 def auth_view(userType):
-    client_send_message("SI am in auth")
 
-    print("\n1. Add User")
+    print("1. Add User")
     print("2. Login")
     choice = input("Enter your choice (1/2): ")
 
@@ -20,13 +20,27 @@ def auth_view(userType):
         print("Invalid choice. Please enter 1, 2")
 
 def sign_up_view(userType):
+
     print("Add "+userType.name+ ":")
     username = input("Enter username: ")
     city = input("Enter city: ")
     phone_number = input("Enter phone number: ")
     password = input("Enter password: ")
 
-    add_user_db(username, city, phone_number, password, userType.name)
+    # Send a "login" request
+    sign_up_request = {
+        "route": "signup",
+        "parameters": {
+            "username": username,
+            "city": city,
+            "phone_number": phone_number,
+            "password": password,
+            "user_type": userType.name
+        }
+    }
+    string_json = json.dumps(sign_up_request)
+    print("json in view"+string_json)
+    client_send_message(sign_up_request)
 
 
 def login_view():

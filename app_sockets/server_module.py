@@ -1,5 +1,7 @@
 import asyncio
 
+from app_router.app_router import handle_AppRouting
+
 # Global variable to store the server socket instance
 server_socket = None
 
@@ -7,13 +9,17 @@ async def handle_client(reader, writer):
     address = writer.get_extra_info('peername')
     print(f"Connection from {address}")
 
+    # receive request from the client
     while True:
         data = await reader.read(100)
         message = data.decode('utf-8')
         print(f"Received message: {message}")
 
-        print("Send: Message received!")
-        writer.write("Message received!".encode('utf-8'))
+        # handle routing and get the server response
+        response = await handle_AppRouting(message)
+
+        writer.write(response.encode('utf-8'))
+
         await writer.drain()
 
 async def start_socket_server(host, port):
