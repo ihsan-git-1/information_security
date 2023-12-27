@@ -1,5 +1,5 @@
 import asyncio
-
+import struct
 from app_router.app_router import handle_AppRouting
 
 # Global variable to store the server socket instance
@@ -11,14 +11,27 @@ async def handle_client(reader, writer):
 
     # receive request from the client
     while True:
-        data = await reader.read(100)
+
+      # Receive the length prefix
+        length_prefix = await reader.readexactly(4)
+        if not length_prefix:
+            break  # Break the loop if no more data is received
+
+        # Unpack the length prefix to get the message length
+        message_length = struct.unpack('!I', length_prefix)[0]
+
+        # Receive the message with the calculated length
+        data = await reader.readexactly(message_length)
         message = data.decode('utf-8')
-        print(f"Received message: {message}")
 
-        # handle routing and get the server response
-        response = await handle_AppRouting(message)
+        print("Message Recived in server " + message)
 
-        writer.write(response.encode('utf-8'))
+        # Trigger the function to process the data
+        dataRouterResponse = handle_AppRouting(message)
+
+        print("Send: " + dataRouterResponse)
+
+        writer.write(dataRouterResponse.encode('utf-8'))
 
         await writer.drain()
 

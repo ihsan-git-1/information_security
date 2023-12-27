@@ -1,8 +1,7 @@
 import base64
 import os
 from cryptography.fernet import Fernet
-
-from accounts.encryptions.encryption import EncryptionClass
+from encryptions.encryption import EncryptionClass
 
 class AesEncryption (EncryptionClass) :
 

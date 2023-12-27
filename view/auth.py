@@ -1,7 +1,7 @@
 
 import json
-from app_sockets.client_module import client_send_message
-from database.database import add_user_db, login_user_db
+from app_sockets.client_module import client_send_json_message
+from database.database import login_user_db
 
 
 def auth_view(userType):
@@ -38,9 +38,7 @@ def sign_up_view(userType):
             "user_type": userType.name
         }
     }
-    string_json = json.dumps(sign_up_request)
-    print("json in view"+string_json)
-    client_send_message(sign_up_request)
+    client_send_json_message(sign_up_request)
 
 
 def login_view():

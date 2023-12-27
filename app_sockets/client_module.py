@@ -1,5 +1,6 @@
 import json
 import socket
+import struct
 import threading
 
 # Global variable to store the client socket instance
@@ -14,23 +15,37 @@ def connect_to_server(host , port):
     server_address = (host, port)
     client_socket.connect(server_address)
 
-def client_send_message(message):    
+def client_send_json_message(fields):    
     global client_socket
+    # Convert the fields to a JSON string
+    message = json.dumps(fields)
 
-    #convert the message to json
-    string_json = json.dumps(message)
+    # Prefix the message with its length
+    message_length = len(message)
+    length_prefix = struct.pack('!I', message_length)
+    message_with_length = length_prefix + message.encode('utf-8')
 
-    # Send a message to the server
-    client_socket.sendall(string_json.encode('utf-8'))
+    # Send the message to the server
+    client_socket.sendall(message_with_length)
 
-    # wait for the server to respond
+    # Wait for the server to respond
     client_receive_response()
 
 
 def client_receive_response():
-    # Receive and print the response from the server
-    response = client_socket.recv(1024)
-    print('********* Server response:', response.decode('utf-8'))
+    length_prefix = client_socket.recv(4)
+    if not length_prefix:
+        return None
+
+    # Unpack the length prefix to get the message length
+    message_length = struct.unpack('!I', length_prefix)[0]
+
+    # Receive the message with the calculated length
+    message = client_socket.recv(message_length).decode('utf-8')
+    
+    print('********* Server ********* \n')
+    print(message)
+    print('********* Server ********* \n')
        
 
 def client_close_connection():
