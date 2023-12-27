@@ -33,19 +33,13 @@ def client_send_json_message(fields):
 
 
 def client_receive_response():
-    length_prefix = client_socket.recv(4)
-    if not length_prefix:
-        return None
+  # Receive and print the response from the server
+    response = client_socket.recv(1024)
+    print('********* Server **********')
+    print(response.decode('utf-8'))
+    print('********* Server **********')
 
-    # Unpack the length prefix to get the message length
-    message_length = struct.unpack('!I', length_prefix)[0]
 
-    # Receive the message with the calculated length
-    message = client_socket.recv(message_length).decode('utf-8')
-    
-    print('********* Server ********* \n')
-    print(message)
-    print('********* Server ********* \n')
        
 
 def client_close_connection():
