@@ -1,10 +1,11 @@
 
-import socket
+from asyncio import start_server
+import asyncio
 import threading
+from app_sockets.client_module import connect_to_server
+from app_sockets.server_module import start_socket_server
 from database.database import initalizeDataBaseTables
-
 from methods.choose_user_type import choose_client_type
-from methods.server_handling import receiving_messages
 
 
 host = "127.0.0.1"
@@ -14,33 +15,18 @@ initalizeDataBaseTables()
 
 choice = input("Do you want server(1) or client(2): ")
 
+def initialize_client_threads():
+    #threads of the client after start 
+    threading.Thread(target=choose_client_type, args=()).start()
+
 if choice == "1":
-    # Create the socket of the server
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((host, port))
 
-    # Listen for connections
-    server.listen()
-
-    print(f"Server listening on {host}:{port}")
-    client, _ = server.accept()
-
-    threading.Thread(target=receiving_messages, args=(client,)).start()
+    asyncio.run(start_socket_server(host, port))
 
 elif choice == "2":
 
-    # Note : uncomment the input in the day of the presentation .
-
-    # ipInput = input("Enter IP address: \n")
-    # portInput = input("Enter port: \n")
-
-    clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    clientSocket = clientSocket.connect((host, int(port)))
-
-    # client threads to start here :
-
-    # choose client type thread
-    threading.Thread(target=choose_client_type, args=(clientSocket,)).start()
+    connect_to_server(host, port)
+    initialize_client_threads()
 
 else:
     exit()
