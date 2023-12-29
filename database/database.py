@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def initalizeDataBaseTables():
     create_user_table()
 
@@ -21,10 +22,11 @@ def create_user_table():
     conn.commit()
     conn.close()
 
+
 def add_user_db(username, city, phone_number, password, user_type):
     conn = sqlite3.connect('user_database.db')
     cursor = conn.cursor()
-    
+
     try:
         cursor.execute('INSERT INTO users (username, city, phone_number, password, user_type) VALUES (?, ?, ?, ?, ?)',
                        (username, city, phone_number, password, user_type))
@@ -35,6 +37,7 @@ def add_user_db(username, city, phone_number, password, user_type):
     finally:
         conn.close()
 
+
 def login_user_db(username, password):
     conn = sqlite3.connect('user_database.db')
     cursor = conn.cursor()
@@ -43,6 +46,7 @@ def login_user_db(username, password):
     conn.close()
     return user
 
+
 def edit_user_info_db(username, new_city, new_phone_number):
     conn = sqlite3.connect('user_database.db')
     cursor = conn.cursor()
@@ -50,7 +54,7 @@ def edit_user_info_db(username, new_city, new_phone_number):
                    (new_city, new_phone_number, username))
     conn.commit()
     conn.close()
-    return "User information updated successfully." 
+    return "User information updated successfully."
 
 
 def create_teacher_csr_db(username, csr):
