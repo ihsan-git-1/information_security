@@ -3,18 +3,19 @@ import cryptography
 import datetime
 import os
 import struct
+import socket
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.x509 import *
-from cryptography.x509.oid import NameOID
+from cryptography import x509
 from app_router.app_router import handle_AppRouting
-from ca_module import ca
+from ca_module import ca_cert_generator
+
 # Global variable to store the server socket instance
 server_socket = None
 
 if not os.path.exists('/ca_module/ca-certificate.pem'):
-    ca.generate_ca_certificate()
+    ca_cert_generator.generate_ca_certificate()
 
 
 async def handle_client(reader, writer):

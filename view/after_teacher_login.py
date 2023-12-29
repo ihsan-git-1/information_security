@@ -3,7 +3,7 @@ from app_sockets.client_module import client_send_json_message
 from encryptions.aes_encryption import AesEncryption
 from encryptions.teacher_csr_generator import CSRGenerator
 from utils import convert_string_to_key
-from ca_module import ca, teacher_cert_generator
+from ca_module import ca_cert_generator, teacher_cert_generator
 
 
 def options_after_teacher_login_view(username):
@@ -55,7 +55,7 @@ def verify_teacher(username):
             "csr": teacher_csr
         }
     }
-    ca_cert, ca_key = ca.generate_ca_certificate()
+    ca_cert, ca_key = ca_cert_generator.generate_ca_certificate()
 
     teacher_cert_generator.generate_teacher_certificate(ca_cert, ca_key, teacher_csr, username)
     server_response = client_send_json_message(verification_request)
