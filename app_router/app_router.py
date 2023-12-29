@@ -12,16 +12,18 @@ def handle_AppRouting(jsonString):
     route = request["route"]
     parameters = request["parameters"]
 
-    print("Activated Route: " + route)
+    print("Activated Route: "+route)
 
     if route == "signup":
-        response = print('hello')
+        response =  sign_up_route(parameters)
 
     elif route == "login":
         response = login_route(parameters)
 
     elif route == "edit":
         response = edit_route(parameters)
+    elif route == "verify":
+        response = verify_route(parameters)
 
     else:
         response = "Invalid Route"
@@ -30,16 +32,15 @@ def handle_AppRouting(jsonString):
     return response
 
 
-def sign_up_route(parameters):
-    response = add_user_db(
+def sign_up_route(parameters):    
+    response =  add_user_db(
         parameters["username"],
         parameters["city"],
-        parameters["phone_number"],
+        parameters["phone_number"], 
         parameters["password"],
         parameters["user_type"],
     )
     return response
-
 
 def login_route(parameters):
     user = login_user_db(
@@ -47,7 +48,7 @@ def login_route(parameters):
         parameters["password"]
     )
     if user:
-        return f"Login successful! Welcome, {user[1]}"
+        return f"Login successful! Welcome, {user[1]}" 
     else:
         return "Login failed no account available"
 
@@ -61,7 +62,10 @@ def edit_route(parameters):
     dbResponse = edit_user_info_db(
         parameters["username"],
         city,
-        phone_number,
+        phone_number, 
     )
-
+    
     return dbResponse
+
+def verify_route(parameters):
+  return parameters
