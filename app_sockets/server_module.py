@@ -1,9 +1,21 @@
 import asyncio
+import cryptography
+import datetime
+import os
 import struct
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.x509 import *
+from cryptography.x509.oid import NameOID
 from app_router.app_router import handle_AppRouting
-
+from ca_module import ca
 # Global variable to store the server socket instance
 server_socket = None
+
+if not os.path.exists('/ca_module/ca-certificate.pem'):
+    ca.generate_ca_certificate()
+
 
 async def handle_client(reader, writer):
     address = writer.get_extra_info('peername')
@@ -12,7 +24,7 @@ async def handle_client(reader, writer):
     # receive request from the client
     while True:
 
-      # Receive the length prefix
+        # Receive the length prefix
         length_prefix = await reader.readexactly(4)
         if not length_prefix:
             break  # Break the loop if no more data is received
@@ -24,16 +36,17 @@ async def handle_client(reader, writer):
         data = await reader.readexactly(message_length)
         message = data.decode('utf-8')
 
-        print("Message Recived in server " + message)
+        print("Message received in server " + message)
 
         # Trigger the function to process the data
-        dataRouterResponse = handle_AppRouting(message)
+        data_router_response = handle_AppRouting(message)
 
-        print("Send: " + dataRouterResponse)
+        print("Send: " + data_router_response)
 
-        writer.write(dataRouterResponse.encode('utf-8'))
+        writer.write(data_router_response.encode('utf-8'))
 
         await writer.drain()
+
 
 async def start_socket_server(host, port):
     global server_socket
@@ -41,9 +54,8 @@ async def start_socket_server(host, port):
     server_socket = await asyncio.start_server(
         handle_client, host, port)
 
-    addr = server_socket.sockets[0].getsockname()
-    print(f'Server listening on {addr}')
+    address = server_socket.sockets[0].getsockname()
+    print(f'Server listening on {address}')
 
     async with server_socket:
         await server_socket.serve_forever()
-
