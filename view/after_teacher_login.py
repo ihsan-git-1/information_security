@@ -25,7 +25,7 @@ def options_after_teacher_login_view(username):
 def verify_teacher(username):
     
    csr_generator = CSRGenerator()
-   print(csr_generator.generate_csr())
+   csr_generator.generate_csr(username)
 
  
 
