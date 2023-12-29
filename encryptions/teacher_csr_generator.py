@@ -4,12 +4,13 @@ from cryptography.hazmat.backends import default_backend
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 
+
 class CSRGenerator:
     def __init__(self, private_key_path='teacher_private.key', csr_path='teacher_csr.pem'):
         self.private_key_path = private_key_path
         self.csr_path = csr_path
 
-    def generate_csr(self,teacher_name):
+    def generate_csr(self, teacher_name):
         # Generate a private key
         private_key = rsa.generate_private_key(
             public_exponent=65537,
@@ -42,10 +43,10 @@ class CSRGenerator:
         with open(self.csr_path, 'wb') as csr_file:
             csr_pem = csr.public_bytes(serialization.Encoding.PEM)
             csr_file.write(csr_pem)
-         # Return CSR content
+            # Return CSR content
             return csr_pem.decode('utf-8')
 
         # Print CSR content
-   #     csr_content = csr.public_bytes(serialization.Encoding.PEM).decode('utf-8')
-   #     print("Generated CSR:")
-   #     print(csr_content)
+#     csr_content = csr.public_bytes(serialization.Encoding.PEM).decode('utf-8')
+#     print("Generated CSR:")
+#     print(csr_content)
