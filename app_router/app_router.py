@@ -1,19 +1,16 @@
 import json
 
-from database.database import add_user_db, edit_user_info_db, login_user_db
+from database.database import add_user_db, edit_user_info_db, login_user_db,create_teacher_csr_db
 from encryptions.aes_encryption import AesEncryption
 from utils import convert_string_to_key
 
 
 def handle_AppRouting(jsonString):
     request = json.loads(jsonString)
-
     # Extract route and parameters from the request
     route = request["route"]
     parameters = request["parameters"]
-
     print("Activated Route: " + route)
-
     if route == "signup":
         response = sign_up_route(parameters)
 
@@ -71,4 +68,10 @@ def edit_route(parameters):
 
 
 def verify_route(parameters):
-    return parameters
+    db_response = create_teacher_csr_db(
+        parameters["username"],
+        parameters["csr"],
+    )
+
+    return db_response
+
