@@ -2,7 +2,7 @@
 from app_enum import UserEnum
 from app_sockets.client_module import client_send_json_message
 from encryptions.aes_encryption import AesEncryption
-from encryptions.teacher_cert_generator import CSRGenerator
+from encryptions.teacher_csr_generator import CSRGenerator
 from utils import convert_string_to_key
 
 
@@ -25,7 +25,18 @@ def options_after_teacher_login_view(username):
 def verify_teacher(username):
     
    csr_generator = CSRGenerator()
-   csr_generator.generate_csr(username)
+   teacher_csr=csr_generator.generate_csr(username)
+
+    # Send a "verification_request" request
+   verification_request = {
+        "route": "verify",
+        "parameters": {
+            "username": username,
+            "csr": teacher_csr
+            }
+        }
+
+   client_send_json_message(verification_request)
 
  
 
