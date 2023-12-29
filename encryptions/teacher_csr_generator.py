@@ -42,8 +42,10 @@ class CSRGenerator:
         with open(self.csr_path, 'wb') as csr_file:
             csr_pem = csr.public_bytes(serialization.Encoding.PEM)
             csr_file.write(csr_pem)
+         # Return CSR content
+            return csr_pem.decode('utf-8')
 
         # Print CSR content
-        csr_content = csr.public_bytes(serialization.Encoding.PEM).decode('utf-8')
-        print("Generated CSR:")
-        print(csr_content)
+   #     csr_content = csr.public_bytes(serialization.Encoding.PEM).decode('utf-8')
+   #     print("Generated CSR:")
+   #     print(csr_content)
