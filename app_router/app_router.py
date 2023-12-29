@@ -22,6 +22,8 @@ def handle_AppRouting(jsonString):
 
     elif route == "edit":
         response = edit_route(parameters)
+    elif route == "verify":
+        response = verify_route(parameters)    
 
     else:
         response = "Invalid Route"
@@ -65,3 +67,5 @@ def edit_route(parameters):
     
     return dbResponse
 
+def verify_route(parameters):
+  return parameters
