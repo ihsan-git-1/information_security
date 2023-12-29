@@ -1,13 +1,12 @@
-
 from app_enum import UserEnum
 from app_sockets.client_module import client_send_json_message
 from encryptions.aes_encryption import AesEncryption
 from encryptions.teacher_csr_generator import CSRGenerator
 from utils import convert_string_to_key
+from ca_module import ca, teacher_cert_generator
 
 
 def options_after_teacher_login_view(username):
-
     print("Home Screen: \n")
 
     print("1. Edit Your Profile")
@@ -18,27 +17,10 @@ def options_after_teacher_login_view(username):
         edit_view(username)
     elif choice == '2':
         verify_teacher(username)
-        
+
     else:
         print("Invalid choice. Please enter 1")
 
-def verify_teacher(username):
-    
-   csr_generator = CSRGenerator()
-   teacher_csr=csr_generator.generate_csr(username)
-
-    # Send a "verification_request" request
-   verification_request = {
-        "route": "verify",
-        "parameters": {
-            "username": username,
-            "csr": teacher_csr
-            }
-        }
-
-   client_send_json_message(verification_request)
-
- 
 
 def edit_view(username):
     new_city = input("Enter new city: ")
@@ -56,9 +38,24 @@ def edit_view(username):
             "phone_number": phone_encrypted.decode()
         }
     }
-    print("city"+ str(city_encrypted))
-    print("phone_number"+ str(phone_encrypted))
+    print("city: " + str(city_encrypted))
+    print("phone_number: " + str(phone_encrypted))
 
     serverResponse = client_send_json_message(edit_request)
 
 
+def verify_teacher(username):
+    csr_generator = CSRGenerator()
+    _, teacher_csr = csr_generator.generate_csr(username)
+    # Send a "verification_request" request
+    verification_request = {
+        "route": "verify",
+        "parameters": {
+            "username": username,
+            "csr": teacher_csr
+        }
+    }
+    ca_cert, ca_key = ca.generate_ca_certificate()
+
+    teacher_cert_generator.generate_teacher_certificate(ca_cert, ca_key, teacher_csr, username)
+    server_response = client_send_json_message(verification_request)

@@ -19,12 +19,10 @@ def client_send_json_message(fields):
     global client_socket
     # Convert the fields to a JSON string
     message = json.dumps(fields)
-
     # Prefix the message with its length
     message_length = len(message)
     length_prefix = struct.pack('!I', message_length)
     message_with_length = length_prefix + message.encode('utf-8')
-
     # Send the message to the server
     client_socket.sendall(message_with_length)
 
@@ -35,6 +33,7 @@ def client_send_json_message(fields):
 def client_receive_response():
   # Receive and print the response from the server
     response = client_socket.recv(1024)
+    print(response)
     print('\n********* Server **********')
     print(response.decode('utf-8'))
     print('********* Server **********\n')

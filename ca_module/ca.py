@@ -32,12 +32,15 @@ def generate_ca_certificate():
         .add_extension(BasicConstraints(ca=True, path_length=0), critical=True) \
         .sign(pk, cryptography.hazmat.primitives.hashes.SHA256(), default_backend())
     script_dir = os.path.dirname(__file__)
-    with open(os.path.join(script_dir, 'ca-certificate.pem'), 'wb') as f:
+    ca_cert_path = os.path.join(script_dir, 'ca-certificate.pem')
+    pk_path = os.path.join(script_dir, 'ca-key.pem')
+    with open(ca_cert_path, 'wb') as f:
         f.write(ca_cert.public_bytes(serialization.Encoding.PEM))
-    with open(os.path.join(script_dir, 'ca-key.pem'), 'wb') as f:
+    with open(pk_path, 'wb') as f:
         f.write(pk.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.TraditionalOpenSSL,
             encryption_algorithm=serialization.NoEncryption()
         ))
-        return ca_cert, pk
+
+        return ca_cert_path, pk_path
