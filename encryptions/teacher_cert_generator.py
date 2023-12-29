@@ -9,7 +9,7 @@ class CSRGenerator:
         self.private_key_path = private_key_path
         self.csr_path = csr_path
 
-    def generate_csr(self):
+    def generate_csr(self,teacher_name):
         # Generate a private key
         private_key = rsa.generate_private_key(
             public_exponent=65537,
@@ -19,11 +19,10 @@ class CSRGenerator:
 
         # Generate a CSR
         subject = x509.Name([
-            x509.NameAttribute(NameOID.COUNTRY_NAME, "US"),
-            x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, "California"),
-            x509.NameAttribute(NameOID.LOCALITY_NAME, "City"),
-            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "University"),
-            x509.NameAttribute(NameOID.COMMON_NAME, "Teacher Name"),
+            x509.NameAttribute(NameOID.COUNTRY_NAME, "SY"),
+            x509.NameAttribute(NameOID.LOCALITY_NAME, "Damascus"),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Damascus University"),
+            x509.NameAttribute(NameOID.COMMON_NAME, teacher_name),
         ])
 
         csr = x509.CertificateSigningRequestBuilder().subject_name(subject).sign(
@@ -44,4 +43,7 @@ class CSRGenerator:
             csr_pem = csr.public_bytes(serialization.Encoding.PEM)
             csr_file.write(csr_pem)
 
-
+        # Print CSR content
+        csr_content = csr.public_bytes(serialization.Encoding.PEM).decode('utf-8')
+        print("Generated CSR:")
+        print(csr_content)
