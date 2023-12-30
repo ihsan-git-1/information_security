@@ -1,7 +1,8 @@
 from app_enum import UserEnum
 from app_sockets.client_module import client_send_json_message
+from csr_module.private_key_generator import PrivateKeyGenerator
 from encryptions.aes_encryption import AesEncryption
-from encryptions.teacher_csr_generator import CSRGenerator
+from csr_module.teacher_csr_generator import CSRGenerator
 from utils import convert_string_to_key
 from ca_module import ca_cert_generator, teacher_cert_generator
 
@@ -45,7 +46,9 @@ def edit_view(username):
 
 
 def verify_teacher(username):
-    csr_generator = CSRGenerator()
+    private_key_generator = PrivateKeyGenerator()
+    private_key_path = private_key_generator.generate_private_key()
+    csr_generator = CSRGenerator(private_key_path=private_key_path)
     _, teacher_csr = csr_generator.generate_csr(username)
     # Send a "verification_request" request
     verification_request = {
