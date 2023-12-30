@@ -19,9 +19,9 @@ def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=Fa
 
     if cert_path and key_path:  # Use secure connection if certificate is available
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        #context.load_cert_chain(certfile=cert_path, keyfile=key_path)
+        #context.check_hostname = False
+        #context.verify_mode = ssl.CERT_NONE
+        context.load_cert_chain(certfile=cert_path, keyfile=key_path)
         client_socket = context.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM),server_hostname=host)
         client_socket.connect(server_address)
 
