@@ -44,6 +44,7 @@ def generate_teacher_certificate(ca_cert, ca_key, teacher_csr, username):
         public_key.verify(
             teacher_csr.signature, teacher_csr.tbs_certrequest_bytes, algorithm=hashes.SHA256(),padding=padding.PKCS1v15()
         )
+        print("Public key VERIFIED!")
     except cryptography.exceptions.InvalidSignature:
         raise ValueError("Invalid CSR signature")
 

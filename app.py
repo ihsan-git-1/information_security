@@ -22,6 +22,7 @@ def initialize_client_threads():
 if choice == "1":
 
     asyncio.run(start_socket_server(host, port,True))
+    #asyncio.run(start_socket_server(host, port))
 
 elif choice == "2":
     # Un Comment the input values in the day of the presentation

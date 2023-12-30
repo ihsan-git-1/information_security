@@ -54,6 +54,7 @@ async def start_socket_server(host, port,use_ssl=False):
     global server_socket
     if use_ssl:
         context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        context.load_verify_locations('ca_module/ca-certificate.pem')
         context.load_cert_chain(certfile='ca_module/ca-certificate.pem', keyfile='ca_module/ca-key.pem')
         server_socket = await asyncio.start_server(
             handle_client, host, port, ssl=context)
