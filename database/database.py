@@ -16,7 +16,8 @@ def create_user_table():
             phone_number TEXT NOT NULL,
             password TEXT NOT NULL,
             user_type TEXT NOT NULL,
-            csr TEXT NULL
+            csr TEXT NULL,
+            private_key TEXT NULL
         )
     ''')
     conn.commit()
@@ -56,6 +57,15 @@ def edit_user_info_db(username, new_city, new_phone_number):
     conn.close()
     return "User information updated successfully."
 
+
+def create_teacher_private_key_db(username, privatekey):
+    conn = sqlite3.connect('user_database.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET private_key=? WHERE username=?',
+                   (privatekey, username))
+    conn.commit()
+    conn.close()
+    return "Teacher private key created successfully."
 
 def create_teacher_csr_db(username, csr):
     conn = sqlite3.connect('user_database.db')
