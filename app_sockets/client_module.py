@@ -10,7 +10,7 @@ client_socket = None
 
 def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=False):
     global client_socket
-
+    server_address = (host, port)
     if force_secure and (not cert_path or not key_path):
         # User doesn't have a certificate and secure connection is forced
         print("Secure connection is required, but you don't have a valid certificate yet.")
@@ -18,14 +18,13 @@ def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=Fa
         return  # Terminate connection attempt
 
     if cert_path and key_path:  # Use secure connection if certificate is available
-        context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.hostname = 'Rita'
         context.load_cert_chain(certfile=cert_path, keyfile=key_path)
-        client_socket = context.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
-
-    else:  # Use non-secure connection for initial CSR generation/verification
+        client_socket = context.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM),server_hostname='Rita')
+        client_socket.connect(server_address)
+    else:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # Connect to the server
-        server_address = (host, port)
         client_socket.connect(server_address)
 
 
