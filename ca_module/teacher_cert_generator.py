@@ -1,7 +1,8 @@
 import cryptography
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography import x509
 import random
 import datetime
@@ -38,6 +39,13 @@ def generate_teacher_certificate(ca_cert, ca_key, teacher_csr, username):
 
     # Identity verification step
     equation, correct_answer = generate_mathematical_equation()
+    public_key = teacher_csr.public_key()
+    try:
+        public_key.verify(
+            teacher_csr.signature, teacher_csr.tbs_certrequest_bytes, algorithm=hashes.SHA256(),padding=padding.PKCS1v15()
+        )
+    except cryptography.exceptions.InvalidSignature:
+        raise ValueError("Invalid CSR signature")
 
     if verify_professor_identity(equation, correct_answer):
         # Identity verified, proceed with certificate creation

@@ -3,6 +3,7 @@ import cryptography
 import datetime
 import os
 import struct
+import ssl
 import socket
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
@@ -49,14 +50,23 @@ async def handle_client(reader, writer):
         await writer.drain()
 
 
-async def start_socket_server(host, port):
+async def start_socket_server(host, port,use_ssl=False):
     global server_socket
-    # Create a socket object
-    server_socket = await asyncio.start_server(
-        handle_client, host, port)
+    if use_ssl:
+        context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        context.load_cert_chain(certfile='ca_module/ca-certificate.pem', keyfile='ca_module/ca-key.pem')
+        server_socket = await asyncio.start_server(
+            handle_client, host, port, ssl=context)
+
+    else:
+        server_socket = await asyncio.start_server(
+            handle_client, host, port)
 
     address = server_socket.sockets[0].getsockname()
     print(f'Server listening on {address}')
 
     async with server_socket:
         await server_socket.serve_forever()
+
+
+

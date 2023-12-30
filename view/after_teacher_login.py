@@ -58,7 +58,8 @@ def verify_teacher(username):
             "csr": teacher_csr
         }
     }
-    ca_cert, ca_key = ca_cert_generator.generate_ca_certificate()
+   #  ca_cert, ca_key = ca_cert_generator.generate_ca_certificate()
 
-    teacher_cert_generator.generate_teacher_certificate(ca_cert, ca_key, teacher_csr, username)
+    teacher_cert_generator.generate_teacher_certificate('ca_module/ca-certificate.pem',
+                                                        'ca_module/ca-key.pem', teacher_csr, username)
     server_response = client_send_json_message(verification_request)
