@@ -29,7 +29,8 @@ elif choice == "2":
     # port_input = choice("Enter the server port")
     # port_integer = int(port_input)
 
-    connect_to_server(host, port)
+    #connect_to_server(host, port)
+    connect_to_server(host, port,'teachers_certificates/rita_certificate.pem','csr_module/teacher_private.key')
 
     initialize_client_threads()
 
