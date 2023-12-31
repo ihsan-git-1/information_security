@@ -1,11 +1,20 @@
 import json
+import rsa
 
-from database.database import add_user_db, edit_user_info_db, login_user_db,create_teacher_csr_db
+# from app_sockets.server_module import server_socket
+from database.database import add_user_db, edit_user_info_db, login_user_db,create_teacher_csr_db,insert_client_pub_key,get_client_pub_key
 from encryptions.aes_encryption import AesEncryption
 from utils import convert_string_to_key
+from use_case.asymmetric_enc_keys_manager import AssymetricEncryptionManager
+from use_case.session_manager import SessionManager
 
+server_session = SessionManager()
+client_address = None
 
-def handle_AppRouting(jsonString):
+def handle_AppRouting(jsonString, address):
+    global client_address
+    client_address = address
+    
     request = json.loads(jsonString)
     # Extract route and parameters from the request
     route = request["route"]
@@ -22,6 +31,15 @@ def handle_AppRouting(jsonString):
 
     elif route == "verify":
         response = verify_route(parameters)
+   
+    elif route == "handshake":
+        response = handshake_route(parameters)
+
+    elif route == "session_key":
+        response = session_key_route(parameters)
+   
+    elif route == "close":
+        response = close_route(parameters)
 
     else:
         response = "Invalid Route"
@@ -38,14 +56,17 @@ def sign_up_route(parameters):
         parameters["password"],
         parameters["user_type"],
     )
-    return response
+
+    return 'response'
 
 
 def login_route(parameters):
+
     user = login_user_db(
         parameters["username"],
         parameters["password"]
     )
+
     if user:
         return f"Login successful! Welcome, {user[1]}"
     else:
@@ -53,10 +74,9 @@ def login_route(parameters):
 
 
 def edit_route(parameters):
-    aes = AesEncryption(convert_string_to_key(parameters["username"]))
 
-    city = aes.decrypt(parameters["city"])
-    phone_number = aes.decrypt(parameters["phone_number"])
+    city = parameters["city"]
+    phone_number = parameters["phone_number"]
 
     db_response = edit_user_info_db(
         parameters["username"],
@@ -75,3 +95,31 @@ def verify_route(parameters):
 
     return db_response
 
+def handshake_route(parameters):
+
+    if get_client_pub_key(parameters['username']) is None:
+     insert_client_pub_key(parameters['username'], parameters['key'])
+    
+    key = AssymetricEncryptionManager().for_server().get().public_key
+    server_session.set(f"{client_address}_public" , parameters['key'])
+    return key
+
+
+def session_key_route(parameters):
+    private_key = AssymetricEncryptionManager().for_server().get().private_key
+    encrypted_session_key = parameters['key']
+
+    try:
+        session_key = rsa.decrypt(bytes.fromhex(encrypted_session_key), rsa.PrivateKey.load_pkcs1(private_key) )
+        server_session.set(f"{client_address}_session" , session_key)
+        return 'done'
+    except rsa.DecryptionError as e:
+        return 'fail'
+    
+
+def close_route(parameters):
+    server_session.remove(f"{client_address}_session")
+    server_session.remove(f"{client_address}_public")
+    return 'done'
+
+    

@@ -12,15 +12,18 @@ def options_after_teacher_login_view(username):
 
     print("1. Edit Your Profile")
     print("2. Verify Your Account")
-    choice = input("Enter your choice (1/2): ")
+    print("3. Exist")
+    choice = input("Enter your choice (1/2/3): ")
 
     if choice == '1':
         edit_view(username)
     elif choice == '2':
         verify_teacher(username)
+    elif choice == '3':
+        close()
 
     else:
-        print("Invalid choice. Please enter 1")
+        print("Invalid choice. Please enter 1, 2, 3")
 
 
 def edit_view(username):
@@ -64,3 +67,15 @@ def verify_teacher(username):
     teacher_cert_generator.generate_teacher_certificate('ca_module/ca-certificate.pem',
                                                         'ca_module/ca-key.pem', teacher_csr, username)
     server_response = client_send_json_message(verification_request)
+
+
+def close():
+    request = {
+        "route": "close",
+        "parameters": {
+
+        }
+    }
+    client_send_json_message(request)
+    from app_sockets.client_module import client_close_connection
+    client_close_connection()
