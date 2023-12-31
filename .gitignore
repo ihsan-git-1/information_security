@@ -10,6 +10,7 @@ migrations/
 venv/
 env/
 profile/
+keys/
 
 *.db
 *.sqlite3
