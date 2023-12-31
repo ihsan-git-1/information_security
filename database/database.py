@@ -17,7 +17,8 @@ def create_user_table():
             password TEXT NOT NULL,
             user_type TEXT NOT NULL,
             csr TEXT NULL,
-            private_key TEXT NULL
+            private_key TEXT NULL,
+            public_key TEXT NULL
         )
     ''')
     conn.commit()
@@ -75,3 +76,18 @@ def create_teacher_csr_db(username, csr):
     conn.commit()
     conn.close()
     return "Teacher CSR created successfully."
+
+def insert_client_pub_key(username, public_key):
+    conn = sqlite3.connect('user_database.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET public_key=? WHERE username=?',(public_key, username))
+    conn.commit()
+    conn.close()
+
+def get_client_pub_key(username):
+    conn = sqlite3.connect('user_database.db')
+    cursor = conn.cursor()
+    result = cursor.execute('SELECT public_key FROM users WHERE username=?',(username,))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0]

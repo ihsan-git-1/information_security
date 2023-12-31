@@ -3,12 +3,14 @@ import socket
 import struct
 import threading
 import ssl
+from encryptions.aes_encryption import AesEncryption
+from utils import convert_string_to_key
 
 # Global variable to store the client socket instance
 client_socket = None
 
-
 def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=False):
+
     global client_socket
     server_address = (host, port)
     if force_secure and (not cert_path or not key_path):
@@ -32,15 +34,19 @@ def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=Fa
 
 
 def client_send_json_message(fields):
+    
+
     global client_socket
     # Convert the fields to a JSON string
-    message = json.dumps(fields)
+    message = encrypt_request(json.dumps(fields))
     # Prefix the message with its length
     message_length = len(message)
     length_prefix = struct.pack('!I', message_length)
-    message_with_length = length_prefix + message.encode('utf-8')
+    message_with_length = length_prefix + message
+ 
     # Send the message to the server
     client_socket.sendall(message_with_length)
+
 
     # Wait for the server to respond
     return client_receive_response()
@@ -52,10 +58,28 @@ def client_receive_response():
     print('\n********* Server **********')
     print(response.decode('utf-8'))
     print('********* Server **********\n')
-    return response.decode('utf-8')
+    response = decrypt_response(response)
+    return response
+    
 
 
 def client_close_connection():
     global client_socket
     # Close the connection
     client_socket.close()
+
+
+def encrypt_request(data):
+    from view.auth import client_session
+    key = client_session.get('session_key')  or convert_string_to_key("secret_key")
+    aes = AesEncryption(key)
+    data = aes.encrypt(data)
+    print(client_session.get('session_key'), '\n-----\n', convert_string_to_key("secret_key"),'\-----\n', key)
+    return data
+
+def decrypt_response(data):
+    from view.auth import client_session
+    key = client_session.get('session_key')  or convert_string_to_key("secret_key")
+    aes = AesEncryption(key)
+    data = aes.decrypt(data)
+    return data
