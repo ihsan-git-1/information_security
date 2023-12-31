@@ -47,7 +47,8 @@ def edit_view(username):
 
 def verify_teacher(username):
     private_key_generator = PrivateKeyGenerator()
-    private_key_path = private_key_generator.generate_private_key()
+    private_key_path = private_key_generator.generate_private_key(username)
+    
     csr_generator = CSRGenerator(private_key_path=private_key_path)
     _, teacher_csr = csr_generator.generate_csr(username)
     # Send a "verification_request" request
