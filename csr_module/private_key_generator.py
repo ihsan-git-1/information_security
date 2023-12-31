@@ -1,13 +1,12 @@
-# private_key_generator.py
-from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
 
 class PrivateKeyGenerator:
-    def __init__(self, private_key_path='csr_module/teacher_private.key'):
-        self.private_key_path = private_key_path
+    def __init__(self, private_key_folder='csr_module/'):
+        self.private_key_folder = private_key_folder
 
-    def generate_private_key(self):
+    def generate_private_key(self, teacher_name):
         # Generate a private key
         private_key = rsa.generate_private_key(
             public_exponent=65537,
@@ -16,7 +15,10 @@ class PrivateKeyGenerator:
         )
 
         # Save private key to a file
-        with open(self.private_key_path, 'wb') as private_key_file:
+        private_key_filename = f'{teacher_name}_private.key'
+        private_key_path = f'{self.private_key_folder}{private_key_filename}'
+
+        with open(private_key_path, 'wb') as private_key_file:
             private_key_pem = private_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PrivateFormat.PKCS8,
@@ -25,4 +27,4 @@ class PrivateKeyGenerator:
             private_key_file.write(private_key_pem)
 
         # Return the private key path
-        return self.private_key_path
+        return private_key_path
