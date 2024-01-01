@@ -49,9 +49,12 @@ def sign_up_view(userType):
             "user_type": userType.name
         }
     }
+    server_response = client_send_json_message(sign_up_request)
 
+    if(server_response == "Error: Username must be unique. User not added."):
+        print(server_response)
+        return
     
-    client_send_json_message(sign_up_request)
     AssymetricEncryptionManager().for_client(username).generate()
 
 

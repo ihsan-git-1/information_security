@@ -57,7 +57,7 @@ def sign_up_route(parameters):
         parameters["user_type"],
     )
 
-    return 'response'
+    return response
 
 
 def login_route(parameters):
