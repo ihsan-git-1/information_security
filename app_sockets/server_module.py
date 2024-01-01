@@ -24,42 +24,46 @@ async def handle_client(reader, writer):
     
     address = writer.get_extra_info('peername')
     print(f"Connection from {address}")
-
+    
     # receive request from the client
     while True:
-        #### here get session key for client ####
-        key = server_session.get(f"{address}_session")  or convert_string_to_key("secret_key")
-        
-        print(server_session.all())
-        print('\n key \n', key)
+        try:
+            #### here get session key for client ####
+            key = server_session.get(f"{address}_session")  or convert_string_to_key("secret_key")
+            
+            print(server_session.all())
+            print('\n key \n', key)
 
-        # Receive the length prefix
-        length_prefix = await reader.readexactly(4)
-        if not length_prefix:
-            break  # Break the loop if no more data is received
+            # Receive the length prefix
+            length_prefix = await reader.readexactly(4)
+            if not length_prefix:
+                break  # Break the loop if no more data is received
 
-        # Unpack the length prefix to get the message length
-        message_length = struct.unpack('!I', length_prefix)[0]
+            # Unpack the length prefix to get the message length
+            message_length = struct.unpack('!I', length_prefix)[0]
 
-        # Receive the message with the calculated length
-        data = await reader.readexactly(message_length)
-        
-        #### here client request decryption ####
-        data =  decrypt_request(data, key)
+            # Receive the message with the calculated length
+            data = await reader.readexactly(message_length)
+            
+            #### here client request decryption ####
+            data =  decrypt_request(data, key)
 
-        message = data
-        print("Message received in server " + message)
+            message = data
+            print("Message received in server " + message)
 
-        
-        # Trigger the function to process the data
-        data_router_response = handle_AppRouting(message, address)
-        print("Send: " + data_router_response)
-        
-        #### here server response encryption ####
-        data =  encrypt_response(data_router_response, key)
+            
+            # Trigger the function to process the data
+            data_router_response = handle_AppRouting(message, address)
+            print("Send: " + data_router_response)
+            
+            #### here server response encryption ####
+            data =  encrypt_response(data_router_response, key)
 
-        writer.write(data)
-        await writer.drain()
+            writer.write(data)
+            await writer.drain()
+            
+        except asyncio.IncompleteReadError:
+            break  # Break the loop if an incomplete read occurs
 
 
 async def start_socket_server(host, port,use_ssl=False):
