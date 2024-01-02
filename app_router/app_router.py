@@ -37,6 +37,9 @@ def handle_AppRouting(jsonString, address):
 
     elif route == "session_key":
         response = session_key_route(parameters)
+
+    elif route == "marks":
+        response = marks(parameters)
    
     elif route == "close":
         response = close_route(parameters)
@@ -115,7 +118,17 @@ def session_key_route(parameters):
         return 'done'
     except rsa.DecryptionError as e:
         return 'fail'
-    
+
+def marks(parameters):
+    client_public_key = server_session.get(f"{client_address}_public")
+
+    try:
+        rsa.verify(parameters["data"].encode(), bytes.fromhex(parameters["signature"]), rsa.PublicKey.load_pkcs1(client_public_key))
+        print(parameters['data'])
+        return 'done'
+    except rsa.DecryptionError as e:
+        return 'fail'
+
 
 def close_route(parameters):
     server_session.remove(f"{client_address}_session")

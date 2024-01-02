@@ -1,3 +1,5 @@
+import rsa
+import json
 from app_enum import UserEnum
 from app_sockets.client_module import client_send_json_message
 from csr_module.private_key_generator import PrivateKeyGenerator
@@ -5,6 +7,7 @@ from encryptions.aes_encryption import AesEncryption
 from csr_module.teacher_csr_generator import CSRGenerator
 from utils import convert_string_to_key
 from ca_module import ca_cert_generator, teacher_cert_generator
+from use_case.asymmetric_enc_keys_manager import AssymetricEncryptionManager
 
 
 def options_after_teacher_login_view(username):
@@ -12,14 +15,17 @@ def options_after_teacher_login_view(username):
 
     print("1. Edit Your Profile")
     print("2. Verify Your Account")
-    print("3. Exist")
-    choice = input("Enter your choice (1/2/3): ")
+    print("3. send marks")
+    print("4. Exist")
+    choice = input("Enter your choice (1/2/3/4): ")
 
     if choice == '1':
         edit_view(username)
     elif choice == '2':
         verify_teacher(username)
     elif choice == '3':
+        send_marks(username)
+    elif choice == '4':
         close()
 
     else:
@@ -67,6 +73,36 @@ def verify_teacher(username):
     teacher_cert_generator.generate_teacher_certificate('ca_module/ca-certificate.pem',
                                                         'ca_module/ca-key.pem', teacher_csr, username)
     server_response = client_send_json_message(verification_request)
+
+def send_marks(user):
+    marks = {}
+    choice = '1'
+    print("add marks")
+    while(choice == '1'):
+      subject = input("subject:")
+      mark = input("mark:")
+      marks[subject] = mark
+      print("1. add another mark")
+      print("2. close")
+      choice = input("Enter your choice (1/2)")
+
+    marks = json.dumps(marks)
+
+    private_key =  AssymetricEncryptionManager().for_client(user).get().private_key
+    signature = rsa.sign(marks.encode(), rsa.PrivateKey.load_pkcs1(private_key), 'SHA-256').hex()
+
+
+    request = {
+        "route": "marks",
+        "parameters": {
+            "data" : marks,
+            "signature": signature
+        }
+    }
+
+    client_send_json_message(request)
+
+
 
 
 def close():

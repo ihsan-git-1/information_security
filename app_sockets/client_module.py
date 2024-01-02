@@ -55,10 +55,10 @@ def client_send_json_message(fields):
 def client_receive_response():
     # Receive and print the response from the server
     response = client_socket.recv(1024)
-    print('\n********* Server **********')
-    print(response.decode('utf-8'))
-    print('********* Server **********\n')
     response = decrypt_response(response)
+    print('\n********* Server **********')
+    print(response)
+    print('********* Server **********\n')
     return response
     
 
