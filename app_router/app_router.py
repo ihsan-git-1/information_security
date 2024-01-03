@@ -1,12 +1,14 @@
 import json
 import rsa
+from ca_module import  teacher_cert_generator
 
 # from app_sockets.server_module import server_socket
 from database.database import add_user_db, edit_user_info_db, login_user_db,create_teacher_csr_db,insert_client_pub_key,get_client_pub_key
 from encryptions.aes_encryption import AesEncryption
-from utils import convert_string_to_key
+from utils import convert_string_to_key, generate_mathematical_equation
 from use_case.asymmetric_enc_keys_manager import AssymetricEncryptionManager
 from use_case.session_manager import SessionManager
+from validators import verify_professor_identity
 
 server_session = SessionManager()
 client_address = None
@@ -28,6 +30,9 @@ def handle_AppRouting(jsonString, address):
 
     elif route == "edit":
         response = edit_route(parameters)
+    
+    elif route == "get_equation":
+        response = get_equation()
 
     elif route == "verify":
         response = verify_route(parameters)
@@ -90,13 +95,32 @@ def edit_route(parameters):
     return db_response
 
 
+
 def verify_route(parameters):
+    
+    teacher_certificate = teacher_cert_generator.generate_teacher_certificate(
+        'ca_module/ca-certificate.pem',
+        'ca_module/ca-key.pem', 
+        parameters["csr"], 
+        parameters["username"],
+        ["role1", "role2"]
+    )
+    
     db_response = create_teacher_csr_db(
         parameters["username"],
         parameters["csr"],
     )
 
-    return db_response
+    return teacher_certificate
+
+def get_equation():    
+    equation, correct_answer =generate_mathematical_equation()
+    return_json = {
+        "equation":equation,
+        "answer":correct_answer,
+    }
+    return json.dumps(return_json)
+
 
 def handshake_route(parameters):
 

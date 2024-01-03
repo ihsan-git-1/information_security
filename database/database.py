@@ -75,7 +75,7 @@ def create_teacher_csr_db(username, csr):
                    (csr, username))
     conn.commit()
     conn.close()
-    return "Teacher CSR created successfully."
+    return "Teacher certificate created successfully."
 
 def insert_client_pub_key(username, public_key):
     conn = sqlite3.connect('user_database.db')
