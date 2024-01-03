@@ -12,6 +12,7 @@ from validators import verify_professor_identity
 from use_case.session_manager import SessionManager
 from database.database import add_student_mark
 from database.database import get_marks
+from ca_module.teacher_cert_generator import get_role
 
 session = SessionManager()
 
@@ -72,7 +73,7 @@ def verify_teacher(username):
     if role != '1' and role != '2':
         print("Invalid role")
         return
-    
+
     private_key_generator = PrivateKeyGenerator()
     private_key_path = private_key_generator.generate_private_key(username)
 
@@ -135,8 +136,13 @@ def send_marks(user):
 def view_marks(username):
     # private_key = AssymetricEncryptionManager().for_client(username).get().private_key
     # data = session.get(private_key)
-    data = get_marks()
-    print(data)
+    # user_certificate = f"teachers_certificates/{user_name}_certificate.pem"
+    role = get_role(f"teachers_certificates/{username}_certificate.pem")
+    if role == 1:
+        data = get_marks()
+        print(data)
+    else:
+        print("You have to be a professor to view marks")
 
 
 def close():
