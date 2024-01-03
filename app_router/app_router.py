@@ -10,7 +10,7 @@ from utils import convert_string_to_key, generate_mathematical_equation
 from use_case.asymmetric_enc_keys_manager import AssymetricEncryptionManager
 from use_case.session_manager import SessionManager
 from validators import verify_professor_identity
-
+from ca_module.teacher_cert_generator import set_role,get_role
 server_session = SessionManager()
 client_address = None
 
@@ -100,9 +100,16 @@ def verify_route(parameters):
         'ca_module/ca-certificate.pem',
         'ca_module/ca-key.pem',
         parameters["csr"],
-        parameters["username"]
+        parameters["username"],
+    )
+    set_role(
+        'ca_module/ca-certificate.pem',
+        'ca_module/ca-key.pem',
+        teacher_certificate,
+        parameters["role"]
     )
 
+    print(get_role(teacher_certificate))
     db_response = create_teacher_csr_db(
         parameters["username"],
         parameters["csr"],
