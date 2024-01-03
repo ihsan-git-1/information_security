@@ -64,6 +64,15 @@ def edit_view(username):
 
 
 def verify_teacher(username):
+    print("1. Role Professor")
+    print("2. Role Teacher")
+    role = input("Enter your choice (1/2): ")
+
+    print(role)
+    if role != '1' and role != '2':
+        print("Invalid role")
+        return
+    
     private_key_generator = PrivateKeyGenerator()
     private_key_path = private_key_generator.generate_private_key(username)
 
@@ -76,7 +85,8 @@ def verify_teacher(username):
         "route": "verify",
         "parameters": {
             "username": username,
-            "csr": teacher_csr
+            "csr": teacher_csr,
+            "role": int(role)
         }
     }
 
