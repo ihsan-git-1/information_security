@@ -1,9 +1,10 @@
 import json
 import rsa
-from ca_module import  teacher_cert_generator
+from ca_module import teacher_cert_generator
 
 # from app_sockets.server_module import server_socket
-from database.database import add_user_db, edit_user_info_db, login_user_db,create_teacher_csr_db,insert_client_pub_key,get_client_pub_key
+from database.database import add_user_db, edit_user_info_db, login_user_db, create_teacher_csr_db, \
+    insert_client_pub_key, get_client_pub_key
 from encryptions.aes_encryption import AesEncryption
 from utils import convert_string_to_key, generate_mathematical_equation
 from use_case.asymmetric_enc_keys_manager import AssymetricEncryptionManager
@@ -13,10 +14,11 @@ from validators import verify_professor_identity
 server_session = SessionManager()
 client_address = None
 
+
 def handle_AppRouting(jsonString, address):
     global client_address
     client_address = address
-    
+
     request = json.loads(jsonString)
     # Extract route and parameters from the request
     route = request["route"]
@@ -30,13 +32,13 @@ def handle_AppRouting(jsonString, address):
 
     elif route == "edit":
         response = edit_route(parameters)
-    
+
     elif route == "get_equation":
         response = get_equation()
 
     elif route == "verify":
         response = verify_route(parameters)
-   
+
     elif route == "handshake":
         response = handshake_route(parameters)
 
@@ -45,7 +47,7 @@ def handle_AppRouting(jsonString, address):
 
     elif route == "marks":
         response = marks(parameters)
-   
+
     elif route == "close":
         response = close_route(parameters)
 
@@ -69,7 +71,6 @@ def sign_up_route(parameters):
 
 
 def login_route(parameters):
-
     user = login_user_db(
         parameters["username"],
         parameters["password"]
@@ -82,7 +83,6 @@ def login_route(parameters):
 
 
 def edit_route(parameters):
-
     city = parameters["city"]
     phone_number = parameters["phone_number"]
 
@@ -95,16 +95,14 @@ def edit_route(parameters):
     return db_response
 
 
-
 def verify_route(parameters):
-    
     teacher_certificate = teacher_cert_generator.generate_teacher_certificate(
         'ca_module/ca-certificate.pem',
-        'ca_module/ca-key.pem', 
-        parameters["csr"], 
+        'ca_module/ca-key.pem',
+        parameters["csr"],
         parameters["username"]
     )
-    
+
     db_response = create_teacher_csr_db(
         parameters["username"],
         parameters["csr"],
@@ -112,22 +110,22 @@ def verify_route(parameters):
 
     return teacher_certificate
 
-def get_equation():    
-    equation, correct_answer =generate_mathematical_equation()
+
+def get_equation():
+    equation, correct_answer = generate_mathematical_equation()
     return_json = {
-        "equation":equation,
-        "answer":correct_answer,
+        "equation": equation,
+        "answer": correct_answer,
     }
     return json.dumps(return_json)
 
 
 def handshake_route(parameters):
-
     if get_client_pub_key(parameters['username']) is None:
-     insert_client_pub_key(parameters['username'], parameters['key'])
-    
+        insert_client_pub_key(parameters['username'], parameters['key'])
+
     key = AssymetricEncryptionManager().for_server().get().public_key
-    server_session.set(f"{client_address}_public" , parameters['key'])
+    server_session.set(f"{client_address}_public", parameters['key'])
     return key
 
 
@@ -136,17 +134,19 @@ def session_key_route(parameters):
     encrypted_session_key = parameters['key']
 
     try:
-        session_key = rsa.decrypt(bytes.fromhex(encrypted_session_key), rsa.PrivateKey.load_pkcs1(private_key) )
-        server_session.set(f"{client_address}_session" , session_key)
+        session_key = rsa.decrypt(bytes.fromhex(encrypted_session_key), rsa.PrivateKey.load_pkcs1(private_key))
+        server_session.set(f"{client_address}_session", session_key)
         return 'done'
     except rsa.DecryptionError as e:
         return 'fail'
+
 
 def marks(parameters):
     client_public_key = server_session.get(f"{client_address}_public")
 
     try:
-        rsa.verify(parameters["data"].encode(), bytes.fromhex(parameters["signature"]), rsa.PublicKey.load_pkcs1(client_public_key))
+        rsa.verify(parameters["data"].encode(), bytes.fromhex(parameters["signature"]),
+                   rsa.PublicKey.load_pkcs1(client_public_key))
         print(parameters['data'])
         return 'done'
     except rsa.DecryptionError as e:
@@ -157,5 +157,3 @@ def close_route(parameters):
     server_session.remove(f"{client_address}_session")
     server_session.remove(f"{client_address}_public")
     return 'done'
-
-    

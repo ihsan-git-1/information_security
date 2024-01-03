@@ -35,12 +35,12 @@ elif choice == "3":
     port_input = input("Enter the server port: \n")
     port_integer = int(port_input)
 
-    if(port_integer == port):
+    if port_integer == port:
         connect_to_server(host, port)
         initialize_client_threads()
 
-    elif(port_integer == port2):
-        user_name = input("Acceing teacher server enter your certificate name : \n")
+    elif port_integer == port2:
+        user_name = input("For accessing teacher server enter your certificate name : \n")
 
         user_certificate = f"teachers_certificates/{user_name}_certificate.pem"
         user_pk = f'csr_module/{user_name}_private.key'
@@ -48,6 +48,7 @@ elif choice == "3":
         if os.path.exists(user_certificate) and os.path.exists(user_pk):
             connect_to_server(host, port2,user_certificate,user_pk)
             print("Successfully Connected using certificate")
+            initialize_client_threads()
  
         else:
             print(f"{user_name} don't have a certificate or private key please verify first ")
