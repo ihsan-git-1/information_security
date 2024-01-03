@@ -102,8 +102,7 @@ def verify_route(parameters):
         'ca_module/ca-certificate.pem',
         'ca_module/ca-key.pem', 
         parameters["csr"], 
-        parameters["username"],
-        ["role1", "role2"]
+        parameters["username"]
     )
     
     db_response = create_teacher_csr_db(
