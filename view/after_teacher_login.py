@@ -17,7 +17,8 @@ def options_after_teacher_login_view(username):
     print("1. Edit Your Profile")
     print("2. Verify Your Account")
     print("3. send marks")
-    print("4. Exist")
+    print("4. View marks")
+    print("5. Exit")
     choice = input("Enter your choice (1/2/3/4): ")
 
     if choice == '1':
@@ -27,6 +28,8 @@ def options_after_teacher_login_view(username):
     elif choice == '3':
         send_marks(username)
     elif choice == '4':
+        view_marks(username)
+    elif choice == '5':
         close()
 
     else:
@@ -58,7 +61,7 @@ def edit_view(username):
 def verify_teacher(username):
     private_key_generator = PrivateKeyGenerator()
     private_key_path = private_key_generator.generate_private_key(username)
-    
+
     # Generate CSR to send 
     csr_generator = CSRGenerator(private_key_path=private_key_path)
     _, teacher_csr = csr_generator.generate_csr(username)
@@ -73,43 +76,39 @@ def verify_teacher(username):
     }
 
     # get the equation 
-    response = client_send_json_message({"route": "get_equation","parameters":{}})
+    response = client_send_json_message({"route": "get_equation", "parameters": {}})
     json_response = json.loads(response)
 
     # if equation solved successfully
-    if verify_professor_identity(json_response["equation"], json_response["answer"],):
-        create_teacher_certificate_response= client_send_json_message(verification_request)
-        print("Verification successful your certificate path is : "+create_teacher_certificate_response)
-
-        # roles = get_certificate_roles(create_teacher_certificate_response)
-
-        # print(roles)
+    if verify_professor_identity(json_response["equation"], json_response["answer"], ):
+        create_teacher_certificate_response = client_send_json_message(verification_request)
+        print("Verification successful your certificate path is : " + create_teacher_certificate_response)
 
     else:
         print("Wrong answer verification cancelled")
+
 
 def send_marks(user):
     marks = {}
     choice = '1'
     print("add marks")
-    while(choice == '1'):
-      subject = input("subject:")
-      mark = input("mark:")
-      marks[subject] = mark
-      print("1. add another mark")
-      print("2. close")
-      choice = input("Enter your choice (1/2)")
+    while choice == '1':
+        subject = input("subject:")
+        mark = input("mark:")
+        marks[subject] = mark
+        print("1. add another mark")
+        print("2. close")
+        choice = input("Enter your choice (1/2)")
 
     marks = json.dumps(marks)
 
-    private_key =  AssymetricEncryptionManager().for_client(user).get().private_key
+    private_key = AssymetricEncryptionManager().for_client(user).get().private_key
     signature = rsa.sign(marks.encode(), rsa.PrivateKey.load_pkcs1(private_key), 'SHA-256').hex()
-
 
     request = {
         "route": "marks",
         "parameters": {
-            "data" : marks,
+            "data": marks,
             "signature": signature
         }
     }
@@ -117,6 +116,9 @@ def send_marks(user):
     client_send_json_message(request)
 
 
+def view_marks(username):
+
+    return username
 
 
 def close():

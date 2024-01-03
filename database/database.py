@@ -68,6 +68,7 @@ def create_teacher_private_key_db(username, privatekey):
     conn.close()
     return "Teacher private key created successfully."
 
+
 def create_teacher_csr_db(username, csr):
     conn = sqlite3.connect('user_database.db')
     cursor = conn.cursor()
@@ -77,17 +78,19 @@ def create_teacher_csr_db(username, csr):
     conn.close()
     return "Teacher certificate created successfully."
 
+
 def insert_client_pub_key(username, public_key):
     conn = sqlite3.connect('user_database.db')
     cursor = conn.cursor()
-    cursor.execute('UPDATE users SET public_key=? WHERE username=?',(public_key, username))
+    cursor.execute('UPDATE users SET public_key=? WHERE username=?', (public_key, username))
     conn.commit()
     conn.close()
+
 
 def get_client_pub_key(username):
     conn = sqlite3.connect('user_database.db')
     cursor = conn.cursor()
-    result = cursor.execute('SELECT public_key FROM users WHERE username=?',(username,))
+    result = cursor.execute('SELECT public_key FROM users WHERE username=?', (username,))
     result = cursor.fetchone()
     conn.close()
     return result[0]

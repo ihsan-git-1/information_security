@@ -9,8 +9,8 @@ from utils import convert_string_to_key
 # Global variable to store the client socket instance
 client_socket = None
 
-def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=False):
 
+def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=False):
     global client_socket
     server_address = (host, port)
     if force_secure and (not cert_path or not key_path):
@@ -24,7 +24,7 @@ def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=Fa
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
         context.load_cert_chain(certfile=cert_path, keyfile=key_path)
-        client_socket = context.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM),server_hostname=host)
+        client_socket = context.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM), server_hostname=host)
         client_socket.connect(server_address)
 
     else:
@@ -34,8 +34,6 @@ def connect_to_server(host, port, cert_path=None, key_path=None, force_secure=Fa
 
 
 def client_send_json_message(fields):
-    
-
     global client_socket
     # Convert the fields to a JSON string
     message = encrypt_request(json.dumps(fields))
@@ -43,10 +41,10 @@ def client_send_json_message(fields):
     message_length = len(message)
     length_prefix = struct.pack('!I', message_length)
     message_with_length = length_prefix + message
- 
-    # Send the message to the server
-    client_socket.sendall(message_with_length)
 
+    # Send the message to the server
+
+    client_socket.sendall(message_with_length)
 
     # Wait for the server to respond
     return client_receive_response()
@@ -60,7 +58,6 @@ def client_receive_response():
     print(response)
     print('********* Server **********\n')
     return response
-    
 
 
 def client_close_connection():
@@ -71,15 +68,16 @@ def client_close_connection():
 
 def encrypt_request(data):
     from view.auth import client_session
-    key = client_session.get('session_key')  or convert_string_to_key("secret_key")
+    key = client_session.get('session_key') or convert_string_to_key("secret_key")
     aes = AesEncryption(key)
     data = aes.encrypt(data)
-    print(client_session.get('session_key'), '\n-----\n', convert_string_to_key("secret_key"),'\-----\n', key)
+    print(client_session.get('session_key'), '\n-----\n', convert_string_to_key("secret_key"), '\n-----\n', key)
     return data
+
 
 def decrypt_response(data):
     from view.auth import client_session
-    key = client_session.get('session_key')  or convert_string_to_key("secret_key")
+    key = client_session.get('session_key') or convert_string_to_key("secret_key")
     aes = AesEncryption(key)
     data = aes.decrypt(data)
     return data
