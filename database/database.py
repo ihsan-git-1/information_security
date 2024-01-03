@@ -3,6 +3,7 @@ import sqlite3
 
 def initalizeDataBaseTables():
     create_user_table()
+    create_students_marks_table()
 
 
 def create_user_table():
@@ -94,3 +95,42 @@ def get_client_pub_key(username):
     result = cursor.fetchone()
     conn.close()
     return result[0]
+
+
+def create_students_marks_table():
+    conn = sqlite3.connect('user_database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS students_marks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_name TEXT UNIQUE NOT NULL,
+            subject_name TEXT NOT NULL,
+            mark TEXT NOT NULL
+                    )
+    ''')
+    conn.commit()
+    conn.close()
+
+
+def add_student_mark(student_name, subject_name, mark):
+    conn = sqlite3.connect('user_database.db')
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('INSERT INTO students_marks (student_name,subject_name, mark) VALUES (?, ?,?)',
+                       (student_name, subject_name, mark))
+        conn.commit()
+        return "mark added successfully."
+    except sqlite3.IntegrityError:
+        return "Error: mark not valid"
+    finally:
+        conn.close()
+
+
+def get_marks():
+    conn = sqlite3.connect('user_database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM students_marks')
+    user = cursor.fetchone()
+    conn.close()
+    return user

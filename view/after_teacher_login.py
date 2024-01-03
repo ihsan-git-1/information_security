@@ -9,6 +9,11 @@ from utils import convert_string_to_key, generate_mathematical_equation
 from ca_module import ca_cert_generator, teacher_cert_generator
 from use_case.asymmetric_enc_keys_manager import AssymetricEncryptionManager
 from validators import verify_professor_identity
+from use_case.session_manager import SessionManager
+from database.database import add_student_mark
+from database.database import get_marks
+
+session = SessionManager()
 
 
 def options_after_teacher_login_view(username):
@@ -93,15 +98,16 @@ def send_marks(user):
     choice = '1'
     print("add marks")
     while choice == '1':
-        subject = input("subject:")
+        subject_name = input("subject:")
+        student_name = input("student name:")
         mark = input("mark:")
-        marks[subject] = mark
+        marks[subject_name] = mark
+        add_student_mark(student_name, subject_name, mark)
         print("1. add another mark")
         print("2. close")
         choice = input("Enter your choice (1/2)")
 
     marks = json.dumps(marks)
-
     private_key = AssymetricEncryptionManager().for_client(user).get().private_key
     signature = rsa.sign(marks.encode(), rsa.PrivateKey.load_pkcs1(private_key), 'SHA-256').hex()
 
@@ -117,8 +123,10 @@ def send_marks(user):
 
 
 def view_marks(username):
-
-    return username
+    # private_key = AssymetricEncryptionManager().for_client(username).get().private_key
+    # data = session.get(private_key)
+    data = get_marks()
+    print(data)
 
 
 def close():
