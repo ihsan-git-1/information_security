@@ -4,9 +4,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography import x509
-import random
 import datetime
-import os
 
 
 def generate_teacher_certificate(ca_cert, ca_key, teacher_csr, username):
@@ -49,3 +47,36 @@ def generate_teacher_certificate(ca_cert, ca_key, teacher_csr, username):
         f.write(teacher_cert.public_bytes(serialization.Encoding.PEM))
 
     return 'teachers_certificates/'+username+'_certificate.pem'
+
+def get_role(cert_path):
+    with open(cert_path, 'rb') as f:
+        cert = x509.load_pem_x509_certificate(f.read(), default_backend())
+        for ext in cert.extensions:
+            if isinstance(ext.value, x509.BasicConstraints):
+                return ext.value.path_length
+    return None
+
+
+def set_role(ca_cert, ca_key ,cert_path, new_role):
+    with open(cert_path, 'rb') as f:
+        cert = x509.load_pem_x509_certificate(f.read(), default_backend())
+    with open(ca_cert, 'rb') as f:
+        ca_cert = x509.load_pem_x509_certificate(f.read(), default_backend())
+    with open(ca_key, 'rb') as f:
+        ca_key = serialization.load_pem_private_key(f.read(), password=None, backend=default_backend())
+
+
+    # Create a new certificate with the updated role
+    updated_cert = x509.CertificateBuilder() \
+        .subject_name(cert.subject) \
+        .issuer_name(cert.issuer) \
+        .public_key(cert.public_key()) \
+        .serial_number(cert.serial_number) \
+        .not_valid_before(cert.not_valid_before) \
+        .not_valid_after(cert.not_valid_after) \
+        .add_extension(x509.BasicConstraints(ca=True, path_length=new_role), critical=False) \
+        .sign(ca_key, hashes.SHA256(), default_backend())
+    
+    # Save the updated certificate
+    with open(cert_path, 'wb') as f:
+        f.write(updated_cert.public_bytes(serialization.Encoding.PEM))
