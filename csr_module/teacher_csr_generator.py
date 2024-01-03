@@ -25,14 +25,18 @@ class CSRGenerator:
             x509.NameAttribute(NameOID.COMMON_NAME, teacher_name),
         ])
 
-        csr = x509.CertificateSigningRequestBuilder().subject_name(subject).sign(
+        csr_builder = x509.CertificateSigningRequestBuilder().subject_name(subject)
+
+
+
+        csr = csr_builder.sign(
             private_key, algorithm=hashes.SHA256(), backend=default_backend()
         )
 
         # Save CSR to a file
         csr_filename = f'{teacher_name}_csr.pem'
         csr_filepath = f'{self.csr_folder}{csr_filename}'
-        
+
         with open(csr_filepath, 'wb') as csr_file:
             csr_pem = csr.public_bytes(serialization.Encoding.PEM)
             csr_file.write(csr_pem)

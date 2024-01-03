@@ -5,6 +5,7 @@ from app_sockets.client_module import connect_to_server
 from app_sockets.server_module import start_socket_server
 from database.database import initalizeDataBaseTables
 from view.choose_user_type import choose_client_type
+from cryptography import x509
 
 
 host = "127.0.0.1"
@@ -39,7 +40,7 @@ elif choice == "3":
         initialize_client_threads()
 
     elif(port_integer == port2):
-        user_name = input("Acceing teacher server enter your username : \n")
+        user_name = input("Acceing teacher server enter your certificate name : \n")
 
         user_certificate = f"teachers_certificates/{user_name}_certificate.pem"
         user_pk = f'csr_module/{user_name}_private.key'
@@ -47,7 +48,7 @@ elif choice == "3":
         if os.path.exists(user_certificate) and os.path.exists(user_pk):
             connect_to_server(host, port2,user_certificate,user_pk)
             print("Successfully Connected using certificate")
-
+ 
         else:
             print(f"{user_name} don't have a certificate or private key please verify first ")
     

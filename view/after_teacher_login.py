@@ -5,9 +5,10 @@ from app_sockets.client_module import client_send_json_message
 from csr_module.private_key_generator import PrivateKeyGenerator
 from encryptions.aes_encryption import AesEncryption
 from csr_module.teacher_csr_generator import CSRGenerator
-from utils import convert_string_to_key
+from utils import convert_string_to_key, generate_mathematical_equation
 from ca_module import ca_cert_generator, teacher_cert_generator
 from use_case.asymmetric_enc_keys_manager import AssymetricEncryptionManager
+from validators import verify_professor_identity
 
 
 def options_after_teacher_login_view(username):
@@ -58,8 +59,10 @@ def verify_teacher(username):
     private_key_generator = PrivateKeyGenerator()
     private_key_path = private_key_generator.generate_private_key(username)
     
+    # Generate CSR to send 
     csr_generator = CSRGenerator(private_key_path=private_key_path)
     _, teacher_csr = csr_generator.generate_csr(username)
+
     # Send a "verification_request" request
     verification_request = {
         "route": "verify",
@@ -68,11 +71,22 @@ def verify_teacher(username):
             "csr": teacher_csr
         }
     }
-   #  ca_cert, ca_key = ca_cert_generator.generate_ca_certificate()
 
-    teacher_cert_generator.generate_teacher_certificate('ca_module/ca-certificate.pem',
-                                                        'ca_module/ca-key.pem', teacher_csr, username)
-    server_response = client_send_json_message(verification_request)
+    # get the equation 
+    response = client_send_json_message({"route": "get_equation","parameters":{}})
+    json_response = json.loads(response)
+
+    # if equation solved successfully
+    if verify_professor_identity(json_response["equation"], json_response["answer"],):
+        create_teacher_certificate_response= client_send_json_message(verification_request)
+        print("Verification successful your certificate path is : "+create_teacher_certificate_response)
+
+        # roles = get_certificate_roles(create_teacher_certificate_response)
+
+        # print(roles)
+
+    else:
+        print("Wrong answer verification cancelled")
 
 def send_marks(user):
     marks = {}
